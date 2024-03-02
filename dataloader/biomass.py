@@ -14,6 +14,7 @@ def resize(x):
 def main():
     path='../data/forcing_data/biomass.nc'
     data = xr.open_dataset(path)
+    index = data.time.values
     dataset = data.biomass.values
     dataset[np.isnan(dataset)] = np.nanmean(dataset)
     output = []
@@ -21,9 +22,12 @@ def main():
         output.append(resize(dataset[idx]))
     dataset = np.array(output)
     dataset = np.dstack((dataset[:, :, 72:], dataset[:, :, :72]))
+
     with open('../cleanedData/forcing_data/biomass.npy', 'wb') as f:
         np.save(f, dataset)
 
+    with open('../cleanedData/forcing_data/biomassIndex.npy', 'wb') as f:
+        np.save(f, index)
 
 if __name__=='__main__':
     main()

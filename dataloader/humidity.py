@@ -14,14 +14,15 @@ def resize(x):
 def main():
     path='../data/forcing_data/humidity.nc'
     data = xr.open_dataset(path)
-    print(data.lon)
-    print(data.lat)
+    index = data.time.values
     dataset = data.RH2M.values
     dataset = np.flip(dataset, axis=1)
     print(dataset.shape)
     with open('../cleanedData/forcing_data/humidity.npy', 'wb') as f:
         np.save(f, dataset)
 
+    with open('../cleanedData/forcing_data/humidityIndex.npy', 'wb') as f:
+        np.save(f, index)
 
 if __name__=='__main__':
     main()

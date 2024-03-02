@@ -14,13 +14,15 @@ def resize(x):
 def main():
     path='../data/forcing_data/rain.nc'
     data = xr.open_dataset(path)
-    print(data)
+    index = data.time.values
     dataset = data.RAIN.values
     dataset = np.flip(dataset, axis=1)
     print(dataset.shape)
     with open('../cleanedData/forcing_data/rain.npy', 'wb') as f:
         np.save(f, dataset)
 
+    with open('../cleanedData/forcing_data/rainIndex.npy', 'wb') as f:
+        np.save(f, index)
 
 if __name__=='__main__':
     main()

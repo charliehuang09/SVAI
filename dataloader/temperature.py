@@ -14,11 +14,15 @@ def resize(x):
 def main():
     path='../data/forcing_data/temperature.nc'
     data = xr.open_dataset(path)
+    index = data.time.values
     dataset = data.TBOT.values
     dataset = np.flip(dataset, axis=1)
     print(dataset.shape)
     with open('../cleanedData/forcing_data/temperature.npy', 'wb') as f:
         np.save(f, dataset)
+    
+    with open('../cleanedData/forcing_data/temperatureIndex.npy', 'wb') as f:
+        np.save(f, index)
 
 
 if __name__=='__main__':

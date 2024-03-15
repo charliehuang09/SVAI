@@ -1,15 +1,18 @@
 import xarray as xr
 import matplotlib.pyplot as plt
-from datetime import datetime
+import datetime
 import os
 import numpy as np
 from dateutil.parser import parse
-from datetime import datetime, timedelta
 import cv2
+import pandas as pd
 
-def resize(x):
-    x = cv2.resize(x, (144, 96)) 
-    return x
+def to_datetime(index):
+    output = []
+    for element in index:
+        output.append(element.astype(datetime.datetime))
+    output = np.array(output)
+    return output
 
 def main():
     path='../data/burned_area_data/FireCCILT11-1982-2018_T62.nc'
@@ -17,12 +20,20 @@ def main():
     index = data.time.values
     dataset = data.BA.values
     dataset = np.flip(dataset, axis=1)
-    print(dataset.shape)
-    with open('../cleanedData/forcing_data/FireCCIL1982-2018.npy', 'wb') as f:
-        np.save(f, dataset)
 
-    with open('../cleanedData/forcing_data/FireCCIL1982-2018Index.npy', 'wb') as f:
-            np.save(f, index)
+    dataset = dataset.tolist()
+
+    index = to_datetime(index)
+    index = pd.DatetimeIndex(index)
+
+    df = pd.Series(dataset, index=index)
+
+    df = df.resample('M').bfill()
+
+    df = df[df.index > datetime.datetime(year=2001, month=1, day=1)]
+    df = df[df.index < datetime.datetime(year=2010, month=1, day=1)]
+
+    df.to_pickle("../cleanedData/fireCCIL1982-2018.pkl")
 
 
 if __name__=='__main__':

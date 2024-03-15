@@ -13,12 +13,20 @@ def main():
     index = data.time.values
     dataset = data.RH2M.values
     dataset = np.flip(dataset, axis=1)
-    print(dataset.shape)
-    with open('../cleanedData/forcing_data/humidity.npy', 'wb') as f:
-        np.save(f, dataset)
 
-    with open('../cleanedData/forcing_data/humidityIndex.npy', 'wb') as f:
-        np.save(f, index)
+    dataset = dataset.tolist()
+
+    index = to_datetime(index)
+    index = pd.DatetimeIndex(index)
+
+    df = pd.Series(dataset, index=index)
+
+    df = df.resample('M').bfill()
+
+    df = df[df.index > datetime.datetime(year=2001, month=1, day=1)]
+    df = df[df.index < datetime.datetime(year=2010, month=1, day=1)]
+
+    df.to_pickle("../cleanedData/humidity.pkl")
 
 if __name__=='__main__':
     main()

@@ -6,10 +6,7 @@ import numpy as np
 from dateutil.parser import parse
 from datetime import datetime, timedelta
 import cv2
-
-def resize(x):
-    x = cv2.resize(x, (144, 96)) 
-    return x
+from misc import *
 
 def main():
     path='../data/forcing_data/biomass.nc'
@@ -17,17 +14,22 @@ def main():
     index = data.time.values
     dataset = data.biomass.values
     dataset[np.isnan(dataset)] = np.nanmean(dataset)
-    output = []
-    for idx, _ in enumerate(dataset):
-        output.append(resize(dataset[idx]))
-    dataset = np.array(output)
+    dataset = resize(dataset)
     dataset = np.dstack((dataset[:, :, 72:], dataset[:, :, :72]))
 
-    with open('../cleanedData/forcing_data/biomass.npy', 'wb') as f:
-        np.save(f, dataset)
+    dataset = dataset.tolist()
 
-    with open('../cleanedData/forcing_data/biomassIndex.npy', 'wb') as f:
-        np.save(f, index)
+    index = to_datetime(index)
+    index = pd.DatetimeIndex(index)
+
+    df = pd.Series(dataset, index=index)
+
+    df = df.resample('M').bfill()
+
+    df = df[df.index > datetime.datetime(year=2001, month=1, day=1)]
+    df = df[df.index < datetime.datetime(year=2010, month=1, day=1)]
+
+    df.to_pickle("../cleanedData/biomass.pkl")
 
 if __name__=='__main__':
     main()

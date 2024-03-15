@@ -6,6 +6,8 @@ import numpy as np
 from dateutil.parser import parse
 from datetime import datetime, timedelta
 import cv2
+from misc import *
+import pandas as pd
 
 def resize(x):
     x = cv2.resize(x, (144, 96)) 
@@ -17,13 +19,20 @@ def main():
     index = data.time.values
     dataset = data.WIND.values
     dataset = np.flip(dataset, axis=1)
-    print(dataset.shape)
-    print(index)
-    with open('../cleanedData/forcing_data/wind.npy', 'wb') as f:
-        np.save(f, dataset)
-    
-    with open('../cleanedData/forcing_data/windIndex.npy', 'wb') as f:
-        np.save(f, index)
+
+    dataset = dataset.tolist()
+
+    index = to_datetime(index)
+    index = pd.DatetimeIndex(index)
+
+    df = pd.Series(dataset, index=index)
+
+    df = df.resample('M').bfill()
+
+    df = df[df.index > datetime.datetime(year=2001, month=1, day=1)]
+    df = df[df.index < datetime.datetime(year=2010, month=1, day=1)]
+
+    df.to_pickle("../cleanedData/wind.pkl")
     
 
 

@@ -4,12 +4,8 @@ from datetime import datetime
 import os
 import numpy as np
 from dateutil.parser import parse
-from datetime import datetime, timedelta
 import cv2
-
-def resize(x):
-    x = cv2.resize(x, (144, 96)) 
-    return x
+from misc import *
 
 def main():
     path='../data/forcing_data/humidity.nc'

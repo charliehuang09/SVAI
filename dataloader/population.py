@@ -4,29 +4,32 @@ from datetime import datetime
 import os
 import numpy as np
 from dateutil.parser import parse
-from datetime import datetime, timedelta
+import datetime
 import cv2
-
-def resize(x):
-    x = cv2.resize(x, (144, 96)) 
-    return x
+import pandas as pd
+from misc import *
 
 def main():
     path='../data/forcing_data/population.nc'
     data = xr.open_dataset(path)
     index = data.time.values
     dataset = data.hdm.values
-    output = []
-    for idx, _ in enumerate(dataset):
-        output.append(resize(dataset[idx]))
-    dataset = np.array(output)
-    print(dataset.shape)
     dataset = np.flip(dataset, axis=1)
-    with open('../cleanedData/forcing_data/population.npy', 'wb') as f:
-        np.save(f, dataset)
+    dataset = resize(dataset)
     
-    with open('../cleanedData/forcing_data/populationIndex.npy', 'wb') as f:
-        np.save(f, index)
+    dataset = dataset.tolist()
+
+    index = to_datetime(index)
+    index = pd.DatetimeIndex(index)
+
+    df = pd.Series(dataset, index=index)
+
+    df = df.resample('M').bfill()
+
+    df = df[df.index > datetime.datetime(year=2001, month=1, day=1)]
+    df = df[df.index < datetime.datetime(year=2010, month=1, day=1)]
+
+    df.to_pickle("../cleanedData/population.pkl")
 
 if __name__=='__main__':
     main()

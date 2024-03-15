@@ -18,6 +18,7 @@ def main():
     dataset = data.WIND.values
     dataset = np.flip(dataset, axis=1)
     print(dataset.shape)
+    print(index)
     with open('../cleanedData/forcing_data/wind.npy', 'wb') as f:
         np.save(f, dataset)
     

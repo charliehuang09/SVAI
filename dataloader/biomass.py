@@ -15,7 +15,7 @@ def main():
     dataset = data.biomass.values
     dataset[np.isnan(dataset)] = np.nanmean(dataset)
     dataset = resize(dataset)
-    dataset = np.dstack((dataset[:, :, 72:], dataset[:, :, :72]))
+    # dataset = np.dstack((dataset[:, :, 72:], dataset[:, :, :72]))
 
     dataset = dataset.tolist()
 

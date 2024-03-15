@@ -19,15 +19,23 @@ class Model(torch.nn.Module):
         super().__init__()
 
         self.input = nn.Linear(6, 24)
+
         self.fc1 = nn.Linear(24, 24)
         self.fc2 = nn.Linear(24, 24)
+
         self.output = nn.Linear(24, 1)
+
+        self.relu = nn.ReLU()
+        self.sigmoid = nn.Sigmoid()
     
     def forward(self, x):
         x = self.input(x)
+        x = self.relu(x)
         
         x = self.fc1(x)
+        x = self.relu(x)
         x = self.fc2(x)
+        x = self.relu(x)
 
         x = self.output(x)
 

@@ -6,29 +6,66 @@ from torch.utils.data import Dataset, DataLoader
 from sklearn.model_selection import train_test_split
 import numpy as np
 from torchvision.transforms import ToTensor, Compose
-class CustomDataset(Dataset):
-    def __init__(self):
-        biomass = np.load("cleanedData/forcing_data/biomass.npy")
-        humidity = np.load("cleanedData/forcing_data/humidity.npy")
-        rain = np.load("cleanedData/forcing_data/rain.npy")
-        population = np.load("cleanedData/forcing_data/population.npy")
-        gfed2001_2015 = np.load("cleanedData/forcing_data/gfed2001-2015.npy")
-        lightning = np.load("cleanedData/forcing_data/lightning.npy")
-        temperature = np.load("cleanedData/forcing_data/temperature.npy")
-        wind = np.load("cleanedData/forcing_data/wind.npy")
-        fireCCIL1982_2018 = np.load("cleanedData/forcing_data/FireCCIL1982-2018.npy")
+import pandas as pd
+import torch
 
-        biomassIndex = np.load("cleanedData/forcing_data/biomassIndex.npy", allow_pickle=True)
-        humidityIndex = np.load("cleanedData/forcing_data/humidityIndex.npy", allow_pickle=True)
-        rainIndex = np.load("cleanedData/forcing_data/rainIndex.npy", allow_pickle=True)
-        populationIndex = np.load("cleanedData/forcing_data/populationIndex.npy", allow_pickle=True)
-        gfed2001_2015Index = np.load("cleanedData/forcing_data/gfed2001-2015Index.npy", allow_pickle=True)
-        lightningIndex = np.load("cleanedData/forcing_data/temperatureIndex.npy", allow_pickle=True)
-        temperatureIndex = np.load("cleanedData/forcing_data/temperatureIndex.npy", allow_pickle=True)
-        windIndex = np.load("cleanedData/forcing_data/windIndex.npy", allow_pickle=True)
-        fireCCIL1982_2018Index = np.load("cleanedData/forcing_data/FireCCIL1982-2018Index.npy", allow_pickle=True)
+def to_numpy(feature):
+    output = []
+    for element in feature:
+        output.append(element)
+    output = np.array(output)
+    output = output.flatten()
+    return output
+
+class Dataset(Dataset):
+    def __init__(self):
+        print("Loading Dataset")
+        lightning = pd.read_pickle('cleanedData/lightning.pkl').to_numpy()
+        population = pd.read_pickle('cleanedData/population.pkl').to_numpy()
+        rain = pd.read_pickle('cleanedData/rain.pkl').to_numpy()
+        biomass = pd.read_pickle('cleanedData/biomass.pkl').to_numpy()
+        temperature = pd.read_pickle('cleanedData/temperature.pkl').to_numpy()
+        humidity = pd.read_pickle('cleanedData/humidity.pkl').to_numpy()
+        wind = pd.read_pickle('cleanedData/wind.pkl').to_numpy()
+        fireCCIL1982_2018 = pd.read_pickle('cleanedData/fireCCIL1982-2018.pkl').to_numpy()
+
+        lightning = to_numpy(lightning)
+        population = to_numpy(population)
+        rain = to_numpy(rain)
+        biomass = to_numpy(biomass)
+        temperature = to_numpy(temperature)
+        humidity = to_numpy(humidity)
+        wind = to_numpy(wind)
+        fireCCIL1982_2018 = to_numpy(fireCCIL1982_2018)
+
+        self.x = []
+        self.x.append(lightning)
+        self.x.append(population)
+        self.x.append(rain)
+        self.x.append(biomass)
+        self.x.append(humidity)
+        self.x.append(wind)
+
+        self.x = np.array(self.x)
+        self.x = self.x.transpose()
+        self.x = torch.from_numpy(self.x)
+
+        self.y = torch.from_numpy(fireCCIL1982_2018)
+
+        self.length = len(self.x)
+
+        print(f"X shape: {self.x.shape}")
+        print(f"Y shape: {self.y.shape}")
+        print(f"Length: {self.length}")
+        print("Finished Loading Dataset")
         
     def __len__(self):
-        return len(self.x)
+        return self.length
     def __getitem__(self, index):
-        return self.x[index].astype('float32') / 255, self.y[index].astype('float32') / 255
+        return self.x[index], self.y[index]
+    
+def main():
+    dataset = Dataset()
+
+if __name__=='__main__':
+    main()

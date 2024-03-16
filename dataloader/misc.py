@@ -31,3 +31,10 @@ def resize(input):
         output.append(cv2.resize(input[idx], (144, 96)))
     output = np.array(output)
     return output
+
+def to_africa(data):
+    data = data[:, 20:70, :]
+    left = data[:, :, :20]
+    right = data[:, :, 132:]
+    data = np.dstack((right, left))
+    return data

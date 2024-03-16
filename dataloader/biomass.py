@@ -9,13 +9,17 @@ import cv2
 from misc import *
 
 def main():
+    print("Loading Biomass")
     path='../data/forcing_data/biomass.nc'
     data = xr.open_dataset(path)
     index = data.time.values
     dataset = data.biomass.values
     dataset[np.isnan(dataset)] = np.nanmean(dataset)
     dataset = resize(dataset)
-    # dataset = np.dstack((dataset[:, :, 72:], dataset[:, :, :72]))
+    dataset = np.dstack((dataset[:, :, 72:], dataset[:, :, :72]))
+    dataset = to_africa(dataset)
+
+    print(f"Shape: {dataset.shape}")
 
     dataset = dataset.tolist()
 
@@ -30,6 +34,8 @@ def main():
     df = df[df.index < datetime.datetime(year=2010, month=1, day=1)]
 
     df.to_pickle("../cleanedData/biomass.pkl")
+
+    print("Finished Loading Biomass")
 
 if __name__=='__main__':
     main()

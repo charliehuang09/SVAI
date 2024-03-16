@@ -8,13 +8,23 @@ import numpy as np
 from torchvision.transforms import ToTensor, Compose
 import pandas as pd
 import torch
+from tqdm import tqdm
 
 def to_numpy(feature):
     output = []
     for element in feature:
         output.append(element)
-    output = np.array(output)
+    output = np.array(output, dtype=np.float32)
     output = output.flatten()
+    return output
+
+def delete_nan(x):
+    output = []
+    for element in tqdm(x):
+        if np.isnan(np.min(x)) == False:
+            output.append(element)
+            print(element)
+    output = np.array(output)
     return output
 
 class Dataset(Dataset):
@@ -38,6 +48,8 @@ class Dataset(Dataset):
         wind = to_numpy(wind)
         fireCCIL1982_2018 = to_numpy(fireCCIL1982_2018)
 
+        self.y = fireCCIL1982_2018
+
         self.x = []
         self.x.append(lightning)
         self.x.append(population)
@@ -45,12 +57,16 @@ class Dataset(Dataset):
         self.x.append(biomass)
         self.x.append(humidity)
         self.x.append(wind)
-
-        self.x = np.array(self.x)
+        self.x.append(temperature)
+        self.x = np.array(self.x, dtype=np.float32)
         self.x = self.x.transpose()
+        data = np.concatenate((self.x, self.y.reshape(-1,1)),axis=1)
+        data = data[~np.isnan(data).any(axis=1), :]
+        self.x = data[:, 0:7]
+        self.y = data[:, 7]
         self.x = torch.from_numpy(self.x)
 
-        self.y = torch.from_numpy(fireCCIL1982_2018)
+        self.y = torch.from_numpy(self.y)
 
         self.length = len(self.x)
 

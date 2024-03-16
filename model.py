@@ -18,7 +18,7 @@ class Model(torch.nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.input = nn.Linear(6, 24)
+        self.input = nn.Linear(7, 24)
 
         self.fc1 = nn.Linear(24, 24)
         self.fc2 = nn.Linear(24, 24)
@@ -31,7 +31,7 @@ class Model(torch.nn.Module):
     def forward(self, x):
         x = self.input(x)
         x = self.relu(x)
-        
+
         x = self.fc1(x)
         x = self.relu(x)
         x = self.fc2(x)

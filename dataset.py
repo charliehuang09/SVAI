@@ -63,6 +63,7 @@ class TrainDataset(Dataset):
         self.x = self.x.transpose()
         data = np.concatenate((self.x, self.y.reshape(-1,1)),axis=1)
         data = data[~np.isnan(data).any(axis=1), :]
+        data = normalize(data)
         
         self.x = data[:, 0:7]
         self.y = data[:, 7]
@@ -122,7 +123,8 @@ class ValidDataset(Dataset):
         self.x = self.x.transpose()
         data = np.concatenate((self.x, self.y.reshape(-1,1)),axis=1)
         data = data[~np.isnan(data).any(axis=1), :]
-        
+        data = normalize(data)
+
         self.x = data[:, 0:7]
         self.y = data[:, 7]
 

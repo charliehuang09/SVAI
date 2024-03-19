@@ -41,7 +41,7 @@ def main():
             loss.backward()
             optimizer.step()
 
-            trainLossLogger.add(loss.item(), config.batch_size)
+            trainLossLogger.add(loss.item(), len(x))
 
         for batch in valid_dataloader:
             x, y = batch
@@ -50,7 +50,7 @@ def main():
             outputs = model(x)
             loss = loss_fn(outputs[:, 0], y)
 
-            validLossLogger.add(loss.item(), config.batch_size)
+            validLossLogger.add(loss.item(), len(x))
 
         print(f"Epoch: {epoch + 1} Train Loss: {trainLossLogger.get()} Valid Loss: {validLossLogger.get()}")
 

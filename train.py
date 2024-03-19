@@ -47,11 +47,8 @@ def main():
             x, y = batch
             x = x.to(device)
             y = y.to(device)
-            optimizer.zero_grad()
             outputs = model(x)
             loss = loss_fn(outputs[:, 0], y)
-            loss.backward()
-            optimizer.step()
 
             validLossLogger.add(loss.item(), config.batch_size)
 

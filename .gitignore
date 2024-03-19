@@ -4,3 +4,5 @@ cleanedData/
 __pycache__/
 .DS_Store
 runs
+wandb
+playground.py

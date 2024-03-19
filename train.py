@@ -5,49 +5,63 @@ from tqdm import trange
 from torch.utils.data import DataLoader
 from torchsummary import summary
 from logger import Logger
+import wandb
+import config
 from torch.utils.tensorboard import SummaryWriter
 
 def main():
     model = Model()
 
     summary(model, (1, 7))
+    
+    device = config.device
+    model = model.to(device)
 
-    train_dataset = TrainDataset(0.8)
-    train_dataloader = DataLoader(train_dataset, batch_size=64)
+    train_dataset = TrainDataset(config.train_test_split)
+    train_dataloader = DataLoader(train_dataset, batch_size=config.batch_size)
 
-    valid_dataset = ValidDataset(0.8)
-    valid_dataloader = DataLoader(valid_dataset, batch_size=64)
+    valid_dataset = ValidDataset(config.train_test_split)
+    valid_dataloader = DataLoader(valid_dataset, batch_size=config.batch_size)
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = config.optimizer(model.parameters(), lr=config.lr)
     loss_fn = torch.nn.MSELoss()
-    device = torch.device('mps')
 
     writer = SummaryWriter()
     trainLossLogger = Logger(writer, "train/LossLogger")
     validLossLogger = Logger(writer, "valid/LossLogger")
 
-    for epoch in range(100):
+    for epoch in range(config.epochs):
         for batch in train_dataloader:
             x, y = batch
+            x = x.to(device)
+            y = y.to(device)
             optimizer.zero_grad()
             outputs = model(x)
             loss = loss_fn(outputs[:, 0], y)
             loss.backward()
             optimizer.step()
 
-            trainLossLogger.add(loss.item(), 64)
+            trainLossLogger.add(loss.item(), config.batch_size)
 
         for batch in valid_dataloader:
             x, y = batch
+            x = x.to(device)
+            y = y.to(device)
             optimizer.zero_grad()
             outputs = model(x)
             loss = loss_fn(outputs[:, 0], y)
             loss.backward()
             optimizer.step()
 
-            validLossLogger.add(loss.item(), 64)
+            validLossLogger.add(loss.item(), config.batch_size)
 
         print(f"Epoch: {epoch + 1} Train Loss: {trainLossLogger.get()} Valid Loss: {validLossLogger.get()}")
 
 if __name__=='__main__':
+    wandb.init(
+    project="SVAI",
+    sync_tensorboard=True,
+    name="Baseline"
+    )
     main()
+    wandb.finish()

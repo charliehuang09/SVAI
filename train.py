@@ -55,10 +55,4 @@ def main():
         print(f"Epoch: {epoch + 1} Train Loss: {trainLossLogger.get()} Valid Loss: {validLossLogger.get()}")
 
 if __name__=='__main__':
-    wandb.init(
-    project="SVAI",
-    sync_tensorboard=True,
-    name="Baseline"
-    )
     main()
-    wandb.finish()

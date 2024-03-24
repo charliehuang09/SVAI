@@ -29,6 +29,7 @@ def remove_zeros(dataset):
     return dataset
 
 def main():
+    print("Loading fireCCIL")
     path='../data/burned_area_data/FireCCILT11-1982-2018_T62.nc'
     data = xr.open_dataset(path)
     index = data.time.values
@@ -50,6 +51,8 @@ def main():
     df = df[df.index < datetime.datetime(year=2010, month=1, day=1)]
 
     df.to_pickle("../cleanedData/fireCCIL1982-2018.pkl")
+
+    print("Finished Loading FireCCIL")
 
 
 if __name__=='__main__':

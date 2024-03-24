@@ -10,6 +10,7 @@ import pandas as pd
 from misc import *
 
 def main():
+    print("Loading Temperature")
     path='../data/forcing_data/temperature.nc'
     data = xr.open_dataset(path)
     index = data.time.values
@@ -30,6 +31,7 @@ def main():
 
     df.to_pickle("../cleanedData/temperature.pkl")
 
+    print("Finished Loading Temperature")
 
 if __name__=='__main__':
     main()

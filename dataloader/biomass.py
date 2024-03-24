@@ -19,8 +19,6 @@ def main():
     dataset = np.dstack((dataset[:, :, 72:], dataset[:, :, :72]))
     dataset = to_africa(dataset)
 
-    print(f"Shape: {dataset.shape}")
-
     dataset = dataset.tolist()
 
     index = to_datetime(index)

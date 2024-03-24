@@ -10,6 +10,7 @@ import pandas as pd
 from misc import *
 
 def main():
+    print("Loading Population")
     path='../data/forcing_data/population.nc'
     data = xr.open_dataset(path)
     index = data.time.values
@@ -31,5 +32,6 @@ def main():
 
     df.to_pickle("../cleanedData/population.pkl")
 
+    print("Finished Loading Population")
 if __name__=='__main__':
     main()

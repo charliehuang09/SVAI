@@ -1,5 +1,6 @@
-python biomass.py
 python fireCCIL1982-2018.py
+python MCD64.py
+python biomass.py
 python humidity.py
 python lightning.py
 python population.py

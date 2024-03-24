@@ -29,11 +29,11 @@ def remove_zeros(dataset):
     return dataset
 
 def main():
+    print("Loading MCD64")
     path='../data/burned_area_data/MCD64CMQ-2001-2019_T62.nc'
     data = xr.open_dataset(path)
     index = data.time.values
     dataset = data.BA.values
-    print(dataset.shape)
     dataset = np.flip(dataset, axis=1)
 
     dataset = remove_zeros(dataset)
@@ -55,6 +55,7 @@ def main():
 
     df.to_pickle("../cleanedData/MCD64.pkl")
 
+    print("Finished Loading MCD64")
 
 if __name__=='__main__':
     main()

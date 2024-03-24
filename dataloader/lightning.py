@@ -46,6 +46,7 @@ def mean(input):
     return input
 
 def main():
+    print("Loading Lightning")
     path='../data/forcing_data/lightning_1995-2011.nc'
     data = xr.open_dataset(path)
     dataset = data.lnfm.values
@@ -70,6 +71,8 @@ def main():
     df = df[df.index < datetime.datetime(year=2010, month=1, day=1)]
 
     df.to_pickle("../cleanedData/lightning.pkl")
+
+    print("Finished Loading Lightning")
 
 if __name__=='__main__':
     main()

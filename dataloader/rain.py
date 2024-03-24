@@ -9,6 +9,7 @@ import cv2
 from misc import *
 
 def main():
+    print("Loading Rain")
     path='../data/forcing_data/rain.nc'
     data = xr.open_dataset(path)
     index = data.time.values
@@ -29,6 +30,7 @@ def main():
 
     df.to_pickle("../cleanedData/rain.pkl")
 
+    print("Finished Loading Rain")
 
 if __name__=='__main__':
     main()

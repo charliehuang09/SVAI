@@ -24,7 +24,9 @@ def main():
     valid_dataloader = DataLoader(valid_dataset, batch_size=config.batch_size)
 
     optimizer = config.optimizer(model.parameters(), lr=config.lr)
-    loss_fn = torch.nn.MSELoss()
+
+    loss_fn = torch.nn.MSELoss() # Regression
+    # loss_fn = torch.nn.CrossEntropyLoss() # Classification
 
     writer = SummaryWriter()
     trainLossLogger = Logger(writer, "train/LossLogger")

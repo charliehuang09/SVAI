@@ -52,6 +52,8 @@ def main():
     dataset = data.lnfm.values
     dataset = np.flip(dataset, axis=1)
     dataset = resize(dataset)
+    dataset = to_africa(dataset)
+    
     dataset = dataset.tolist()
 
     dataframes = []

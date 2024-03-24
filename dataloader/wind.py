@@ -19,6 +19,7 @@ def main():
     index = data.time.values
     dataset = data.WIND.values
     dataset = np.flip(dataset, axis=1)
+    dataset = to_africa(dataset)
 
     dataset = dataset.tolist()
 

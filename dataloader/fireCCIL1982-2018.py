@@ -6,6 +6,7 @@ import numpy as np
 from dateutil.parser import parse
 import cv2
 import pandas as pd
+from misc import *
 
 def to_datetime(index):
     output = []
@@ -35,6 +36,7 @@ def main():
     index = data.time.values
     dataset = data.BA.values
     dataset = np.flip(dataset, axis=1)
+    dataset = to_africa(dataset)
     
     dataset = remove_zeros(dataset)
 

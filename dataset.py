@@ -51,11 +51,8 @@ class TrainDataset(Dataset):
         fireCCIL1982_2018 = to_numpy(fireCCIL1982_2018)
         mcd64 = to_numpy(mcd64)
 
-        # self.y = fireCCIL1982_2018
-        self.y = mcd64
-
-        #fireCCIL1982_2018 = Regression
-        #mcd64 = Classification
+        self.y = fireCCIL1982_2018 # Regression
+        # self.y = mcd64 #Classification
 
         self.x = []
         self.x.append(lightning)
@@ -117,11 +114,8 @@ class ValidDataset(Dataset):
         fireCCIL1982_2018 = to_numpy(fireCCIL1982_2018)
         mcd64 = to_numpy(mcd64)
 
-        # self.y = fireCCIL1982_2018
-        self.y = mcd64
-
-        #fireCCIL1982_2018 = Regression
-        #mcd64 = Classification
+        self.y = fireCCIL1982_2018 #Regression
+        # self.y = mcd64 # Classification
 
         self.x = []
         self.x.append(lightning)

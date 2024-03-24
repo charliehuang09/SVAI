@@ -39,6 +39,7 @@ class TrainDataset(Dataset):
         humidity = pd.read_pickle('cleanedData/humidity.pkl').to_numpy()
         wind = pd.read_pickle('cleanedData/wind.pkl').to_numpy()
         fireCCIL1982_2018 = pd.read_pickle('cleanedData/fireCCIL1982-2018.pkl').to_numpy()
+        mcd64 = pd.read_pickle('cleanedData/MCD64.pkl')
 
         lightning = to_numpy(lightning)
         population = to_numpy(population)
@@ -48,8 +49,10 @@ class TrainDataset(Dataset):
         humidity = to_numpy(humidity)
         wind = to_numpy(wind)
         fireCCIL1982_2018 = to_numpy(fireCCIL1982_2018)
+        mcd64 = to_numpy(mcd64)
 
-        self.y = fireCCIL1982_2018
+        # self.y = fireCCIL1982_2018
+        self.y = mcd64
 
         self.x = []
         self.x.append(lightning)

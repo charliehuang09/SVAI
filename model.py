@@ -38,6 +38,7 @@ class Model(torch.nn.Module):
         x = self.relu(x)
 
         x = self.output(x)
+        x = self.sigmoid(x)
 
         return x
 

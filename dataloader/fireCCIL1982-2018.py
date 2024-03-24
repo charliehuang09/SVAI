@@ -14,12 +14,28 @@ def to_datetime(index):
     output = np.array(output)
     return output
 
+def remove_zeros(dataset):
+    print("Removing Zeros")
+    print(f"Before: {np.nanmean(dataset)}")
+
+    dataset = np.swapaxes(dataset, 0, 2)
+    for i in range(len(dataset)):
+        for j in range(len(dataset[i])):
+            if (not np.any(dataset[i][j])):
+                dataset[i][j] = np.nan
+    dataset = np.swapaxes(dataset, 0, 2)
+    
+    print(f"Before: {np.nanmean(dataset)}")
+    return dataset
+
 def main():
     path='../data/burned_area_data/FireCCILT11-1982-2018_T62.nc'
     data = xr.open_dataset(path)
     index = data.time.values
     dataset = data.BA.values
     dataset = np.flip(dataset, axis=1)
+    
+    dataset = remove_zeros(dataset)
 
     dataset = dataset.tolist()
 

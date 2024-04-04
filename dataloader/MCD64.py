@@ -40,7 +40,7 @@ def main():
 
     dataset = remove_zeros(dataset)
 
-    dataset[dataset < 0.5] = 0
+    dataset[dataset <= 0.5] = 0
     dataset[dataset > 0.5] = 1
 
     dataset = dataset.tolist()

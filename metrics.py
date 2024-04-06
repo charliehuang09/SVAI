@@ -53,25 +53,6 @@ def getScatterPlot(model, dataloader):
         y_pred.extend(outputs.tolist())
     return plt.scatter(y_pred, y_true).get_figure()
 
-def getR2Score(model, dataloader):
-    device = config.device
-    y_true = []
-    y_pred = []
-    for batch in dataloader:
-        x, y = batch
-        x = x.to(device)
-        y = y.to(device)
-        outputs = model(x).flatten()
-        y_true.extend(y.tolist())
-        y_pred.extend(outputs.tolist())
-    y_pred = torch.tensor(y_pred)
-    y_true = torch.tensor(y_true)
-    r2Score = R2Score()
-    r2Score.update(y_pred, y_true)
-    return r2Score.compute()
-
-
-
 def main():
     model = RegressionModel()
     dataset = Dataset("Train")

@@ -7,7 +7,7 @@ from torchsummary import summary
 from logger import Logger
 import config
 from modelType import ModelType
-from metrics import getConfusionMatrix, getAccuracy, getF1Score, getScatterPlot, getR2Score
+from metrics import getConfusionMatrix, getAccuracy, getF1Score, getScatterPlot
 import warnings
 from torch.utils.tensorboard import SummaryWriter
 warnings.filterwarnings("ignore", message="torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.")

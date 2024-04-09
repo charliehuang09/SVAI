@@ -23,6 +23,7 @@ def getConfusionMatrix(model, dataloader):
         y_true.extend(y.tolist())
         y_pred.extend(outputs.tolist())
     matrix = confusion_matrix(y_true, y_pred)
+    matrix = matrix / matrix.sum()
     print(matrix)
     matrix = heatmap(matrix, annot=True, fmt='.3g')
     matrix = matrix.get_figure()

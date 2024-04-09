@@ -4,7 +4,7 @@ from seaborn import heatmap
 from model import RegressionModel
 from dataset import Dataset
 from torch.utils.data import DataLoader
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, r2_score
 import torch
 import matplotlib.pyplot as plt
 def getConfusionMatrix(model, dataloader):
@@ -35,10 +35,13 @@ def getAccuracy(y_pred, y):
     wrong = torch.sum(y_pred != y).item()
     return correct / (correct + wrong)
 
-def getF1Score(y_pred, y):
+def getF1Score(y_pred, y_true):
     y_pred[y_pred <= 0.5] = 0
     y_pred[y_pred > 0.5] = 1
-    return f1_score(y, y_pred.detach().numpy(), average='weighted')
+    return f1_score(y_true, y_pred.detach().numpy(), average='weighted')
+
+def getR2Score(y_pred, y_true):
+    return r2_score(y_true, y_pred)
 
 def getScatterPlot(model, dataloader):
     device = config.device

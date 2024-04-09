@@ -14,24 +14,28 @@ class Logger:
     self.value += input
     self.length += 1
     return
+
+  def write(self, value):
+    self.writter.add_scalar(self.writter_path, value, self.idx)
+
+    if self.max == None:
+      self.max = value
+    if self.min == None:
+      self.min = value
+
+    self.max = max(self.max, value)
+    self.min = min(self.min, value)
+    self.idx += 1
   
   def get(self):
     if self.length == 0:
       return 0
-    output = self.value / self.length
+    value = self.value / self.length
     self.value = 0
     self.length = 0
 
-    self.writter.add_scalar(self.writter_path, output, self.idx)
-    if self.max == None:
-      self.max = output
-    if self.min == None:
-      self.min = output
-
-    self.max = max(self.max, output)
-    self.min = min(self.min, output)
-    self.idx += 1
-    return output
+    self.write(value)
+    return value
   
   def getMax(self):
     return self.max

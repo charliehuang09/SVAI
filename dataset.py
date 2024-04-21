@@ -5,10 +5,9 @@ import numpy as np
 import pandas as pd
 import torch
 from tqdm import tqdm
-import config
-from modelType import ModelType
 from sklearn.preprocessing import normalize
 from typing import Literal
+from config import ModelType
 
 def to_numpy(feature):
     output = []
@@ -29,8 +28,8 @@ def delete_nan(x):
 
 datasetType = Literal["Train", "Valid"]
 class Dataset(Dataset):
-    def __init__(self, type: datasetType, train_test_split=config.train_test_split):
-        print("Loading Train Dataset")
+    def __init__(self, type: datasetType, train_test_split, modelType):
+        print(f"Loading {type} Dataset")
         lightning = pd.read_pickle('cleanedData/lightning.pkl').to_numpy()
         population = pd.read_pickle('cleanedData/population.pkl').to_numpy()
         rain = pd.read_pickle('cleanedData/rain.pkl').to_numpy()
@@ -53,9 +52,9 @@ class Dataset(Dataset):
         fireCCIL1982_2018 = to_numpy(fireCCIL1982_2018)
         mcd64 = to_numpy(mcd64)
 
-        if (config.modelType == ModelType.Regression):
+        if (modelType == ModelType.Regression):
             self.y = fireCCIL1982_2018 # Regression
-        if (config.modelType == ModelType.Classification):
+        if (modelType == ModelType.Classification):
             self.y = mcd64 #Classification
 
         self.x = []
@@ -70,11 +69,17 @@ class Dataset(Dataset):
         self.x = np.array(self.x, dtype=np.float32)
         self.x = self.x.transpose()
 
-        data = np.concatenate((self.x, self.y.reshape(-1,1)),axis=1)
+        data = np.concatenate((self.x, self.y.reshape(-1,1)), axis=1)
         data = data[~np.isnan(data).any(axis=1), :]
         
         self.x = normalize(data[:, 0:8])
         self.y = data[:, 8]
+        
+        if (modelType == ModelType.Regression):
+            self.y = self.y/self.y.mean()
+        if (modelType == ModelType.Classification):
+            pass
+        
 
         self.x = torch.from_numpy(self.x)
         self.y = torch.from_numpy(self.y)
@@ -102,8 +107,8 @@ class Dataset(Dataset):
         return self.x[index], self.y[index]
     
 def main():
-    train_dataset = Dataset("Train")
-    valid_dataset = Dataset("Valid")
+    train_dataset = Dataset("Train", 0.8, ModelType.Regression)
+    valid_dataset = Dataset("Valid", 0.8, ModelType.Classification)
 
 if __name__=='__main__':
     main()

@@ -15,6 +15,8 @@ def main():
         "optimizer": config.optimizer,
         "lr": config.lr,
         "train_test_split": config.train_test_split,
+        "num_layers": config.num_layers,
+        "layer_width": config.layer_width
     },
     )
     train.main(

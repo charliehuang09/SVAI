@@ -39,6 +39,7 @@ def main():
     dataset = to_africa(dataset)
     
     dataset = remove_zeros(dataset)
+    dataset[dataset > 2e6] =  np.nan
 
     dataset = dataset.tolist()
 
@@ -50,7 +51,7 @@ def main():
     df = df.resample('M').bfill()
 
     df = df[df.index > datetime.datetime(year=2001, month=1, day=1)]
-    df = df[df.index < datetime.datetime(year=2010, month=1, day=1)]
+    df = df[df.index < datetime.datetime(year=2011, month=1, day=1)]
 
     df.to_pickle("../cleanedData/fireCCIL1982-2018.pkl")
 

@@ -6,6 +6,7 @@ from dataset import Dataset
 from torch.utils.data import DataLoader
 from sklearn.metrics import f1_score, r2_score
 import torch
+import matplotlib
 import matplotlib.pyplot as plt
 def getConfusionMatrix(model, dataloader):
     device = config.device
@@ -37,6 +38,8 @@ def getAccuracy(y_pred, y):
     return correct / (correct + wrong)
 
 def getF1Score(y_pred, y_true):
+    y_pred = y_pred.cpu()
+    y_true = y_true.cpu()
     y_pred[y_pred <= 0.5] = 0
     y_pred[y_pred > 0.5] = 1
     return f1_score(y_true, y_pred.detach().numpy(), average='weighted')
@@ -55,6 +58,7 @@ def getScatterPlot(model, dataloader):
         outputs = model(x).flatten()
         y_true.extend(y.tolist())
         y_pred.extend(outputs.tolist())
+    matplotlib.use('agg')
     return plt.scatter(y_pred, y_true).get_figure()
 
 def main():

@@ -7,3 +7,4 @@ python population.py
 python rain.py
 python temperature.py
 python wind.py
+python soilMoisture.py

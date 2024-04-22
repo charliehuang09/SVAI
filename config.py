@@ -9,7 +9,7 @@ epochs = 10000
 train_test_split=0.8
 device = torch.device('cpu')
 modelType = ModelType.Regression
-num_layers = 3
-layer_width = 8
+num_layers = 4
+layer_width = 16
 
 log_frequency = 100

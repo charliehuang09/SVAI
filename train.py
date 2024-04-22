@@ -12,6 +12,8 @@ import warnings
 from torch.utils.tensorboard import SummaryWriter
 warnings.filterwarnings("ignore", message="torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.")
 def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType, num_layers, layer_width):
+    torch.manual_seed(16312942289339198420)
+    print(f"Seed: {torch.initial_seed()}")
 
     print(f"Model Type: {modelType}")
 

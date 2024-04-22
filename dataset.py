@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import torch
 from tqdm import tqdm
-from sklearn.preprocessing import normalize
+from sklearn.preprocessing import normalize, MinMaxScaler
 from typing import Literal
 from config import ModelType
 
@@ -72,15 +72,23 @@ class Dataset(Dataset):
         data = np.concatenate((self.x, self.y.reshape(-1,1)), axis=1)
         data = data[~np.isnan(data).any(axis=1), :]
         
-        self.x = normalize(data[:, 0:8])
+        self.x = data[:, 0:8]
         self.y = data[:, 8]
+        
+        scaler = MinMaxScaler()
+        scaler.fit(self.x)
+        self.x = scaler.transform(self.x)
+        
+        scaler = MinMaxScaler()
+        scaler.fit(self.y.reshape(-1, 1))
+        self.y = scaler.transform(self.y.reshape(-1, 1))
+        self.y = self.y.flatten()
         
         if (modelType == ModelType.Regression):
             self.y = self.y/self.y.mean()
         if (modelType == ModelType.Classification):
             pass
         
-
         self.x = torch.from_numpy(self.x)
         self.y = torch.from_numpy(self.y)
 
@@ -100,7 +108,11 @@ class Dataset(Dataset):
         print(f"Y shape: {self.y.shape}")
         print(f"Length: {self.length}")
         print("Finished Loading Dataset\n")
-        
+    
+    def getx(self):
+        return self.x
+    def gety(self):
+        return self.y
     def __len__(self):
         return self.length
     def __getitem__(self, index):

@@ -4,8 +4,8 @@ ModelType = Enum('ModelType', ['Regression', 'Classification'], type=str)
 
 lr = 0.001
 optimizer = "Adam"
-batch_size = 64
-epochs = 10000
+batch_size = 1024
+epochs = 5000
 train_test_split=0.8
 device = torch.device('cpu')
 modelType = ModelType.Regression

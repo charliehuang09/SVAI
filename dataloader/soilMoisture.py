@@ -42,7 +42,8 @@ def main():
     dataset = to_numpy(dataset)
     dataset = resize(dataset)
     dataset = to_africa(dataset)
-
+    dataset[dataset > 5e20] = np.nan
+    
     dataset = dataset.tolist()
 
     index = to_datetime(index)

@@ -3,7 +3,7 @@ from torch import nn
 import config
 from torchsummary import summary
 class RegressionModel(torch.nn.Module):
-    def __init__(self, num_layers, layer_width):
+    def __init__(self, num_layers, layer_width, dropout):
         super().__init__()
 
         self.input = nn.Linear(8, layer_width)
@@ -13,6 +13,8 @@ class RegressionModel(torch.nn.Module):
             self.layers.append(nn.Linear(layer_width, layer_width))
 
         self.output = nn.Linear(layer_width, 1)
+        
+        self.dropout = nn.Dropout(dropout)
 
         self.relu = nn.ReLU()
     
@@ -23,13 +25,14 @@ class RegressionModel(torch.nn.Module):
         for layer in self.layers:
             x = layer(x)
             x = self.relu(x)
+            x = self.dropout(x)
             
         x = self.output(x)
         x = self.relu(x)
         return x
     
 class ClassificationModel(torch.nn.Module):
-    def __init__(self, num_layers, layer_width):
+    def __init__(self, num_layers, layer_width, dropout):
         super().__init__()
 
         self.input = nn.Linear(8, layer_width)
@@ -40,6 +43,8 @@ class ClassificationModel(torch.nn.Module):
 
         self.output = nn.Linear(layer_width, 1)
 
+        self.dropout = nn.Dropout(dropout)
+        
         self.relu = nn.ReLU()
         self.sigmoid = nn.Sigmoid()
     
@@ -50,6 +55,7 @@ class ClassificationModel(torch.nn.Module):
         for layer in self.layers:
             x = layer(x)
             x = self.relu(x)
+            x = self.dropout(x)
 
         x = self.output(x)
         x = self.sigmoid(x)

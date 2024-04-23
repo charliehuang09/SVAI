@@ -18,7 +18,7 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType,
     print(f"Model Type: {modelType}")
 
     if (modelType == ModelType.Regression):
-        model = RegressionModel(num_layers, layer_width)
+        model = RegressionModel(num_layers, layer_width, 0.05)
     if (modelType == ModelType.Classification):
         model = ClassificationModel()
 
@@ -60,6 +60,7 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType,
     for epoch in range(epochs):
         y_predTrain = []
         y_trueTrain = []
+        model.train()
         for batch in train_dataloader:
             x, y = batch
             x = x.to(device)
@@ -70,12 +71,11 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType,
             loss.backward()
             optimizer.step()
 
-            trainLossLogger.add(loss.item(), len(x))
-
-            y_predTrain.extend(outputs.tolist())
-            y_trueTrain.extend(y.tolist())
-
             if (epoch % log_frequency == 0):
+                trainLossLogger.add(loss.item(), len(x))
+                y_predTrain.extend(outputs.tolist())
+                y_trueTrain.extend(y.tolist())
+                
                 if (modelType == ModelType.Regression):
                     pass
                 if (modelType == ModelType.Classification):
@@ -84,19 +84,19 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType,
 
         y_predValid = []
         y_trueValid = []
+        model.eval()
         for batch in valid_dataloader:
             x, y = batch
             x = x.to(device)
             y = y.to(device)
             outputs = model(x)
             loss = loss_fn(outputs[:, 0], y)
-
-            validLossLogger.add(loss.item(), len(x))
-
-            y_predValid.extend(outputs.tolist())
-            y_trueValid.extend(y.tolist())
             
             if (epoch % log_frequency == 0):
+                validLossLogger.add(loss.item(), len(x))
+                y_predValid.extend(outputs.tolist())
+                y_trueValid.extend(y.tolist())
+                
                 if (modelType == ModelType.Regression):
                     pass
                 if (modelType == ModelType.Classification):

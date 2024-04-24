@@ -17,6 +17,7 @@ def main():
     dataset = data.hdm.values
     dataset = np.flip(dataset, axis=1)
     dataset = resize(dataset)
+    dataset = np.dstack((dataset[:, :, 72:], dataset[:, :, :72]))
     dataset = to_africa(dataset)
     
     dataset = dataset.tolist()

@@ -1,13 +1,8 @@
 import xarray as xr
-import matplotlib.pyplot as plt
 from datetime import datetime
-import os
 import numpy as np
-from dateutil.parser import parser
 import datetime
-import cv2
 import datetime
-import time
 import pandas as pd
 import datetime
 from tqdm import trange
@@ -64,7 +59,7 @@ def main():
         index = pd.DatetimeIndex(index)
 
         df = pd.Series(dataset, index=index)
-        df = df.resample('M').apply(mean)
+        df = df.resample('ME').apply(mean)
         dataframes.append(df)
     
     df = pd.concat(dataframes)

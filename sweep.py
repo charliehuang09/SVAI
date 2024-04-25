@@ -1,8 +1,7 @@
 import wandb
 import train
-import torch
 import pprint
-from config import ModelType, device, train_test_split, epochs
+from config import device, modelType, train_test_split
 
 def run(config=None):
     with wandb.init(config=config, sync_tensorboard=True):
@@ -11,12 +10,14 @@ def run(config=None):
             lr=config.lr, 
             optimizer=config.optimizer, 
             batch_size=config.batch_size ,
-            epochs=epochs,
-            train_test_split=train_test_split,
-            device=device,
-            modelType=ModelType.Regression,
+            epochs=config.epochs,
             num_layers=config.num_layers,
-            layer_width=config.layer_width
+            layer_width=config.layer_width,
+            dropout=config.dropout,
+            
+            device=device,
+            train_test_split=train_test_split,
+            modelType=modelType,
         )
 
 def main():
@@ -34,11 +35,17 @@ def main():
         'batch_size': {
             'values': [16, 32, 64, 128, 256, 512]
         },
+        'epochs': {
+            'values': [5000]
+        },
         'num_layers': {
             'values': [1, 2, 4, 6, 8]
         },
         'layer_width': {
             'values': [8, 16, 32, 64, 128]
+        },
+        'dropout': {
+            'values': [0.00, 0.01, 0.05, 0.10, 0.15, 0.20, 0.30]
         }
     }
     sweep_config['parameters'] = parameters_dict
@@ -52,7 +59,7 @@ def main():
     pprint.pprint(sweep_config)
     
     sweep_id = wandb.sweep(sweep_config, project="SVAI")
-    wandb.agent(sweep_id, run, count=10)
+    wandb.agent(sweep_id, run, count=25)
 
 if __name__=='__main__':
     main()

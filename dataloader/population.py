@@ -1,11 +1,7 @@
 import xarray as xr
-import matplotlib.pyplot as plt
 from datetime import datetime
-import os
 import numpy as np
-from dateutil.parser import parse
 import datetime
-import cv2
 import pandas as pd
 from misc import *
 
@@ -27,7 +23,7 @@ def main():
 
     df = pd.Series(dataset, index=index)
 
-    df = df.resample('M').bfill()
+    df = df.resample('ME').bfill()
 
     df = df[df.index > datetime.datetime(year=2001, month=1, day=1)]
     df = df[df.index < datetime.datetime(year=2011, month=1, day=1)]

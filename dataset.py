@@ -1,13 +1,10 @@
-from torch.utils.data import random_split
 from torch.utils.data import Dataset
-from sklearn.model_selection import train_test_split
 import numpy as np
 import pandas as pd
 import torch
 from tqdm import tqdm
-from sklearn.preprocessing import normalize, MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler
 from typing import Literal
-from config import ModelType
 
 def to_numpy(feature):
     output = []
@@ -26,9 +23,8 @@ def delete_nan(x):
     output = np.array(output)
     return output
 
-datasetType = Literal["Train", "Valid"]
 class Dataset(Dataset):
-    def __init__(self, type: datasetType, train_test_split, modelType):
+    def __init__(self, type: Literal["Train", "Valid"], train_test_split, modelType : Literal['Regression', 'Classification']):
         print(f"Loading {type} Dataset")
         lightning = pd.read_pickle('cleanedData/lightning.pkl').to_numpy()
         population = pd.read_pickle('cleanedData/population.pkl').to_numpy()
@@ -52,9 +48,9 @@ class Dataset(Dataset):
         fireCCIL1982_2018 = to_numpy(fireCCIL1982_2018)
         mcd64 = to_numpy(mcd64)
 
-        if (modelType == ModelType.Regression):
+        if (modelType == 'Regression'):
             self.y = fireCCIL1982_2018 # Regression
-        if (modelType == ModelType.Classification):
+        if (modelType == 'Classification'):
             self.y = mcd64 #Classification
 
         self.x = []
@@ -84,9 +80,9 @@ class Dataset(Dataset):
         self.y = scaler.transform(self.y.reshape(-1, 1))
         self.y = self.y.flatten()
         
-        if (modelType == ModelType.Regression):
+        if (modelType == 'Regression'):
             self.y = self.y/self.y.mean()
-        if (modelType == ModelType.Classification):
+        if (modelType == 'Classification'):
             pass
         
         self.x = torch.from_numpy(self.x)
@@ -98,7 +94,7 @@ class Dataset(Dataset):
             self.y = self.y[:int(len(self.y) * train_test_split)]
 
         if (type == "Valid"):
-            print(f"Train Range: {int(len(self.x) * train_test_split)}-{len(self.x)}")
+            print(f"Valid Range: {int(len(self.x) * train_test_split)}-{len(self.x)}")
             self.x = self.x[int(len(self.x) * train_test_split):]
             self.y = self.y[int(len(self.y) * train_test_split):]
 
@@ -119,8 +115,8 @@ class Dataset(Dataset):
         return self.x[index], self.y[index]
     
 def main():
-    train_dataset = Dataset("Train", 0.8, ModelType.Regression)
-    valid_dataset = Dataset("Valid", 0.8, ModelType.Classification)
+    train_dataset = Dataset("Train", 0.8, 'Regression')
+    valid_dataset = Dataset("Valid", 0.8, 'Classification')
 
 if __name__=='__main__':
     main()

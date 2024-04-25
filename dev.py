@@ -6,11 +6,13 @@ def main():
         optimizer=config.optimizer, 
         batch_size=config.batch_size ,
         epochs=config.epochs,
-        train_test_split=config.train_test_split,
-        device=config.device,
-        modelType=config.modelType,
         num_layers=config.num_layers,
-        layer_width=config.layer_width
+        layer_width=config.layer_width,
+        dropout=config.dropout,
+        
+        device=config.device,
+        train_test_split=config.train_test_split,
+        modelType=config.modelType,
         )
 
 if __name__=='__main__':

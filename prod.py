@@ -11,12 +11,14 @@ def main():
     sync_tensorboard=True,
     name=args.name,
     config={
-        "epochs": config.epochs,
-        "optimizer": config.optimizer,
         "lr": config.lr,
-        "train_test_split": config.train_test_split,
+        "optimizer": config.optimizer,
+        "batch_size": config.batch_size,
+        "epochs": config.epochs,
         "num_layers": config.num_layers,
-        "layer_width": config.layer_width
+        "layer_width": config.layer_width,
+        "dropout": config.dropout,
+        "train_test_split": config.train_test_split,
     },
     )
     train.main(
@@ -24,11 +26,13 @@ def main():
         optimizer=config.optimizer, 
         batch_size=config.batch_size ,
         epochs=config.epochs,
-        train_test_split=config.train_test_split,
-        device=config.device,
-        modelType=config.modelType,
         num_layers=config.num_layers,
-        layer_width=config.layer_width
+        layer_width=config.layer_width,
+        dropout=config.dropout,
+        
+        device=config.device,
+        train_test_split=config.train_test_split,
+        modelType=config.modelType,
         )
     wandb.finish()
 

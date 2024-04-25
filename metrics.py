@@ -1,11 +1,11 @@
 import config
 from sklearn.metrics import confusion_matrix
 from seaborn import heatmap
-from model import RegressionModel
 from dataset import Dataset
 from torch.utils.data import DataLoader
 from sklearn.metrics import f1_score, r2_score
 import torch
+from model import Model
 import matplotlib
 import matplotlib.pyplot as plt
 def getConfusionMatrix(model, dataloader):
@@ -62,7 +62,7 @@ def getScatterPlot(model, dataloader):
     return plt.scatter(y_pred, y_true).get_figure()
 
 def main():
-    model = RegressionModel()
+    model = Model()
     dataset = Dataset("Train")
     dataloader = DataLoader(dataset, batch_size=config.batch_size)
     getConfusionMatrix(model, dataloader)

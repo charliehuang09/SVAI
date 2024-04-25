@@ -1,26 +1,24 @@
 import torch
 from torch import optim
 from dataset import Dataset
-from model import RegressionModel, ClassificationModel
+from model import Model
 from tqdm import trange
 from torch.utils.data import DataLoader
 from torchsummary import summary
 from logger import Logger
 from metrics import getConfusionMatrix, getAccuracy, getF1Score, getScatterPlot, getR2Score
-from config import ModelType, log_frequency
+from config import log_frequency
 import warnings
+from typing import Literal
 from torch.utils.tensorboard import SummaryWriter
 warnings.filterwarnings("ignore", message="torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.")
-def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType, num_layers, layer_width):
+def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType : Literal['Regression', 'Classification'], num_layers, layer_width, dropout):
     torch.manual_seed(16312942289339198420)
     print(f"Seed: {torch.initial_seed()}")
 
     print(f"Model Type: {modelType}")
 
-    if (modelType == ModelType.Regression):
-        model = RegressionModel(num_layers, layer_width, 0.05)
-    if (modelType == ModelType.Classification):
-        model = ClassificationModel()
+    model = Model(num_layers, layer_width, dropout, modelType)
 
     summary(model, (1, 8))
     
@@ -39,13 +37,13 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType,
 
     loss_fn = None
     writer = SummaryWriter()
-    if (modelType == ModelType.Regression):
+    if (modelType == 'Regression'):
         loss_fn = torch.nn.MSELoss() #Regression
 
         trainR2Logger = Logger(writer, "train/R2")
         validR2Logger = Logger(writer, "valid/R2")
 
-    if (modelType == ModelType.Classification):
+    if (modelType == 'Classification'):
         loss_fn = torch.nn.CrossEntropyLoss() #Classification
 
         trainAccuracyLogger = Logger(writer, "train/Accuracy")
@@ -76,9 +74,9 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType,
                 y_predTrain.extend(outputs.tolist())
                 y_trueTrain.extend(y.tolist())
                 
-                if (modelType == ModelType.Regression):
+                if (modelType == 'Regression'):
                     pass
-                if (modelType == ModelType.Classification):
+                if (modelType == 'Classification'):
                     trainAccuracyLogger.add(getAccuracy(outputs, y), 1)
                     trainF1Logger.add(getF1Score(outputs, y), 1)
 
@@ -97,28 +95,28 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType,
                 y_predValid.extend(outputs.tolist())
                 y_trueValid.extend(y.tolist())
                 
-                if (modelType == ModelType.Regression):
+                if (modelType == 'Regression'):
                     pass
-                if (modelType == ModelType.Classification):
+                if (modelType == 'Classification'):
                     validAccuracyLogger.add(getAccuracy(outputs, y), 1)
                     validF1Logger.add(getF1Score(outputs, y), 1)
         if (epoch % log_frequency == 0):
-            if (modelType == ModelType.Regression):
+            if (modelType == 'Regression'):
                 print(f"Epoch: {epoch} Train Loss: {trainLossLogger.get()} Valid Loss: {validLossLogger.get()} TrainR2: {getR2Score(y_predTrain, y_trueTrain)} ValidR2: {getR2Score(y_predValid, y_trueValid)}")
 
                 trainR2Logger.write(getR2Score(y_predTrain, y_trueTrain))
                 validR2Logger.write(getR2Score(y_predValid, y_trueValid))
 
-            if (modelType == ModelType.Classification):
+            if (modelType == 'Classification'):
                 print(f"Epoch: {epoch} Train Loss: {trainLossLogger.get()} Valid Loss: {validLossLogger.get()}Train Accuracy: {trainAccuracyLogger.get()} Valid Accuracy: {validAccuracyLogger.get()}")
                 
                 trainF1Logger.get()
                 validF1Logger.get()
     
-    if (modelType == ModelType.Regression):
+    if (modelType == 'Regression'):
         writer.add_figure("train/ScatterPlot", getScatterPlot(model, train_dataloader))
         writer.add_figure("valid/ScatterPlot", getScatterPlot(model, valid_dataloader))
-    if (modelType == ModelType.Classification):
+    if (modelType == 'Classification'):
         writer.add_figure("train/ConfusionMatrix", getConfusionMatrix(model, train_dataloader))
         writer.add_figure("valid/ConfusionMatrix", getConfusionMatrix(model, valid_dataloader))
     
@@ -131,9 +129,11 @@ if __name__=='__main__':
         optimizer=config.optimizer, 
         batch_size=config.batch_size ,
         epochs=config.epochs,
-        train_test_split=config.train_test_split,
-        device=config.device,
-        modelType=config.modelType,
         num_layers=config.num_layers,
-        layer_width=config.layer_width
+        layer_width=config.layer_width,
+        dropout=config.dropout,
+        
+        device=config.device,
+        train_test_split=config.train_test_split,
+        modelType=config.modelType,
         )

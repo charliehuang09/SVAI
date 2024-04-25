@@ -1,9 +1,7 @@
 from datetime import datetime
 import numpy as np
-from dateutil.parser import parse
 import datetime
 import cv2
-import pandas as pd
 
 def to_datetime(input):
     output = []

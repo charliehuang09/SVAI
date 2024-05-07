@@ -6,7 +6,7 @@ from tqdm import trange
 from torch.utils.data import DataLoader
 from torchsummary import summary
 from logger import Logger
-from metrics import getConfusionMatrix, getAccuracy, getF1Score, getScatterPlot, getR2Score
+from metrics import getConfusionMatrix, getAccuracy, getF1Score, getScatterPlot, getR2Score, remap
 from config import log_frequency
 import warnings
 from typing import Literal
@@ -116,11 +116,15 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType 
     if (modelType == 'Regression'):
         writer.add_figure("train/ScatterPlot", getScatterPlot(model, train_dataloader))
         writer.add_figure("valid/ScatterPlot", getScatterPlot(model, valid_dataloader))
+        writer.add_figure('train/Remap', remap(model, index=0))
+        writer.add_figure('valid/Remap', remap(model, index=-1))
     if (modelType == 'Classification'):
         writer.add_figure("train/ConfusionMatrix", getConfusionMatrix(model, train_dataloader))
         writer.add_figure("valid/ConfusionMatrix", getConfusionMatrix(model, valid_dataloader))
     
     writer.flush()
+    
+    torch.save(model, 'model.pt')
 
 if __name__=='__main__':
     import config

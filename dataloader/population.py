@@ -4,6 +4,7 @@ import numpy as np
 import datetime
 import pandas as pd
 from misc import *
+import matplotlib.pyplot as plt
 
 def main():
     print("Loading Population")

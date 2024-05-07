@@ -6,4 +6,5 @@ __pycache__/
 runs
 wandb
 playground.py
+model.pt
 config.py

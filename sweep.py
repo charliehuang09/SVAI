@@ -30,19 +30,19 @@ def main():
             'values': [1e-1, 1e-2, 1e-3, 1e-4, 1e-5]
         },
         'optimizer': {
-            'values': ["Adam", "SGD"]
+            'values': ["SGD"]
         },
         'batch_size': {
             'values': [16, 32, 64, 128, 256, 512]
         },
         'epochs': {
-            'values': [5000]
+            'values': [3000]
         },
         'num_layers': {
-            'values': [1, 2, 4, 6, 8]
+            'values': [4, 6, 8, 16, 32]
         },
         'layer_width': {
-            'values': [8, 16, 32, 64, 128]
+            'values': [32, 64, 128]
         },
         'dropout': {
             'values': [0.00, 0.01, 0.05, 0.10, 0.15, 0.20, 0.30]

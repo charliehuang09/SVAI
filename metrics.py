@@ -14,6 +14,7 @@ from sklearn.preprocessing import MinMaxScaler
 import matplotlib
 import matplotlib.pyplot as plt
 from dataset import scale
+from tqdm import trange, tqdm
 def getConfusionMatrix(model, dataloader):
     device = config.device
     y_true = []
@@ -119,7 +120,8 @@ def remap(model, index=0):
                 y[i][j] = np.nan
                 continue
             map[i][j] = model(x[:, i, j])
-            
+    
+    return map, y
     matplotlib.use('agg')
     fig, ax = plt.subplots(1, 2)
     
@@ -130,13 +132,76 @@ def remap(model, index=0):
     ax[1].set_title("Ground Truth")
     
     return fig
+def writeRemap(model, writer):
+    matplotlib.use('agg')
+    predsTrain = []
+    ground_truth_Train = []
+    
+    predsValid = []
+    ground_truth_Valid = []
+    for i in trange(120):
+        map, y = remap(model, i)
+        print(map.shape)
+        
+        fig, ax = plt.subplots(1, 2)
+    
+        ax[0].imshow(map)
+        ax[0].set_title("Predictions")
+        
+        ax[1].imshow(y)
+        ax[1].set_title("Ground Truth")
+        
+        if (i <= config.train_test_split * 120):
+            predsTrain.append(map)
+            ground_truth_Train.append(y)
+            writer.add_figure("train/Remap", fig, i)
+        else:
+            predsValid.append(map)
+            ground_truth_Valid.append(y)
+            writer.add_figure("valid/Remap", fig, i)
+        
+    predsTrain = np.array(predsTrain).mean(axis=0)
+    ground_truth_Train = np.array(ground_truth_Train).mean(axis=0)
+    
+    predsValid = np.array(predsValid).mean(axis=0)
+    ground_truth_Valid = np.array(ground_truth_Valid).mean(axis=0)
+    
+    fig, ax = plt.subplots(1, 2)
 
+    ax[0].imshow(predsTrain)
+    ax[0].set_title("Predictions")
+    
+    ax[1].imshow(ground_truth_Train)
+    ax[1].set_title("Ground Truth")
+    
+    writer.add_figure("train/RemapAverage", fig)
+    
+    
+    fig, ax = plt.subplots(1, 2)
+
+    ax[0].imshow(predsValid)
+    ax[0].set_title("Predictions")
+    
+    ax[1].imshow(ground_truth_Valid)
+    ax[1].set_title("Ground Truth")
+    
+    writer.add_figure("valid/RemapAverage", fig)
+    
+        
+
+        
+        
+    
 def main():
     model = torch.load('model.pt')
     writer = SummaryWriter()
     
-    writer.add_figure('Train/Remap', remap(model, index=0))
-    writer.add_figure('Valid/Remap', remap(model, index=-1))
+    writeRemap(model, writer)
+    
+        
+    
+    # writer.add_figure('Train/Remap', remap(model, index=0))
+    # writer.add_figure('Valid/Remap', remap(model, index=-1))
     
     writer.flush()
     

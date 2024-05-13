@@ -13,6 +13,7 @@ def main():
         device=config.device,
         train_test_split=config.train_test_split,
         modelType=config.modelType,
+        shift=config.shift
         )
 
 if __name__=='__main__':

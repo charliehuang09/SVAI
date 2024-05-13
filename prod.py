@@ -19,6 +19,7 @@ def main():
         "layer_width": config.layer_width,
         "dropout": config.dropout,
         "train_test_split": config.train_test_split,
+        "shift": config.shift
     },
     )
     train.main(
@@ -33,6 +34,7 @@ def main():
         device=config.device,
         train_test_split=config.train_test_split,
         modelType=config.modelType,
+        shift=config.shift
         )
     wandb.finish()
 

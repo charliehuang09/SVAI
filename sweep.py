@@ -1,7 +1,7 @@
 import wandb
 import train
 import pprint
-from config import device, modelType, train_test_split
+from config import device, modelType, train_test_split, shift
 
 def run(config=None):
     with wandb.init(config=config, sync_tensorboard=True):
@@ -18,6 +18,7 @@ def run(config=None):
             device=device,
             train_test_split=train_test_split,
             modelType=modelType,
+            shift=shift
         )
 
 def main():

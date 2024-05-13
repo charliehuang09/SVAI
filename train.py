@@ -12,7 +12,7 @@ import warnings
 from typing import Literal
 from torch.utils.tensorboard import SummaryWriter
 warnings.filterwarnings("ignore", message="torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.")
-def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType : Literal['Regression', 'Classification'], num_layers, layer_width, dropout):
+def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType : Literal['Regression', 'Classification'], num_layers, layer_width, dropout, shift):
     torch.manual_seed(16312942289339198420)
     print(f"Seed: {torch.initial_seed()}")
 
@@ -24,10 +24,10 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType 
     
     model = model.to(device)
 
-    train_dataset = Dataset("Train", train_test_split, modelType)
+    train_dataset = Dataset("Train", train_test_split=train_test_split, modelType=modelType, shift=shift)
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size)
 
-    valid_dataset = Dataset("Valid", train_test_split, modelType)
+    valid_dataset = Dataset("Valid", train_test_split=train_test_split, modelType=modelType, shift=shift)
     valid_dataloader = DataLoader(valid_dataset, batch_size=batch_size)
 
     if (optimizer == "Adam"):
@@ -140,4 +140,5 @@ if __name__=='__main__':
         device=config.device,
         train_test_split=config.train_test_split,
         modelType=config.modelType,
+        shift=config.shift
         )

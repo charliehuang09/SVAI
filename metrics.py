@@ -129,7 +129,6 @@ def remap(model, index=0):
     ax[1].imshow(y)
     ax[1].set_title("Ground Truth")
     
-    
     return fig
 
 def main():
@@ -138,7 +137,6 @@ def main():
     
     writer.add_figure('Train/Remap', remap(model, index=0))
     writer.add_figure('Valid/Remap', remap(model, index=-1))
-    
     
     writer.flush()
     

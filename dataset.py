@@ -27,7 +27,7 @@ def scale(x):
     return x
 
 class Dataset(Dataset):
-    def __init__(self, type: Literal["Train", "Valid"], train_test_split, modelType : Literal['Regression', 'Classification'], verbose=True):
+    def __init__(self, type: Literal["Train", "Valid"], train_test_split, modelType : Literal['Regression', 'Classification'], shift=False, verbose=True):
         if (verbose):
             print(f"Loading {type} Dataset")
         lightning = pd.read_pickle('cleanedData/lightning.pkl').to_numpy()
@@ -74,6 +74,11 @@ class Dataset(Dataset):
             self.xmax.append(np.nanmax(element))
 
         self.x = np.array(self.x, dtype=np.float32)
+        
+        if (shift):
+            self.x = self.x[:, :119, :, :]
+            self.y = self.y[1:, :, :]
+            
         self.x = self.x.reshape(8, -1)
         self.x = self.x.transpose()
 

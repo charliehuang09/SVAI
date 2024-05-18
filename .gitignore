@@ -1,5 +1,5 @@
 playground.ipynb
-data/
+# data/
 cleanedData/
 __pycache__/
 .DS_Store

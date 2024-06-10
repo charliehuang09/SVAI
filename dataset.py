@@ -101,6 +101,7 @@ class Dataset(Dataset):
         
         for i in range(8):
             self.x[:, i] = scale(self.x[:, i])
+            self.y[:, i + 1] = scale(self.y[:, i + 1])
 
         if (modelType == 'Regression'):
             self.y[:, 0] = self.y[:, 0] / self.y[:, 0].mean()

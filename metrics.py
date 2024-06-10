@@ -122,16 +122,6 @@ def remap(model, index=0):
             map[i][j] = model(x[:, i, j])
     
     return map, y
-    matplotlib.use('agg')
-    fig, ax = plt.subplots(1, 2)
-    
-    ax[0].imshow(map)
-    ax[0].set_title("Predictions")
-    
-    ax[1].imshow(y)
-    ax[1].set_title("Ground Truth")
-    
-    return fig
 def writeRemap(model, writer):
     matplotlib.use('agg')
     predsTrain = []
@@ -197,11 +187,6 @@ def main():
     writer = SummaryWriter()
     
     writeRemap(model, writer)
-    
-        
-    
-    # writer.add_figure('Train/Remap', remap(model, index=0))
-    # writer.add_figure('Valid/Remap', remap(model, index=-1))
     
     writer.flush()
     

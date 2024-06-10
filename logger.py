@@ -49,7 +49,6 @@ class Logger:
     self.idx = 0
     self.max = None
     self.min = None
-    return
   
   def setPrefix(self, prefix):
     self.write_prefix = prefix

@@ -76,23 +76,34 @@ class Dataset(Dataset):
         self.x = np.array(self.x, dtype=np.float32)
         
         if (shift):
+            a = self.y[np.newaxis, 1:, :, :]
+            b = self.x[:, 1:, :, :]
+            self.y = np.concatenate((a, b), axis=0) #y, variables
             self.x = self.x[:, :119, :, :]
-            self.y = self.y[1:, :, :]
+            
+            print(self.x.shape)
+            print(self.y.shape)
             
         self.x = self.x.reshape(8, -1)
         self.x = self.x.transpose()
-
-        data = np.concatenate((self.x, self.y.reshape(-1,1)), axis=1)
+        
+        self.y = self.y.reshape(9, -1)
+        self.y = self.y.transpose()
+        
+        print(self.x.shape)
+        print(self.y.shape)
+        
+        data = np.concatenate((self.x, self.y), axis=1)
         data = data[~np.isnan(data).any(axis=1), :]
         
-        self.x = data[:, 0:8]
-        self.y = data[:, 8]
+        self.x = data[:, :8]
+        self.y = data[:, 8:]
         
         for i in range(8):
             self.x[:, i] = scale(self.x[:, i])
 
         if (modelType == 'Regression'):
-            self.y = self.y / self.y.mean()
+            self.y[:, 0] = self.y[:, 0] / self.y[:, 0].mean()
             pass
         if (modelType == 'Classification'):
             pass
@@ -132,11 +143,11 @@ class Dataset(Dataset):
     def __len__(self):
         return self.length
     def __getitem__(self, index):
-        return self.x[index], self.y[index]
+        return self.x[index], self.y[index, 0]
     
 def main():
-    train_dataset = Dataset("Train", 0.8, 'Regression')
-    valid_dataset = Dataset("Valid", 0.8, 'Classification')
+    train_dataset = Dataset("Train", 0.8, 'Regression', True)
+    valid_dataset = Dataset("Valid", 0.8, 'Classification', True)
 
 if __name__=='__main__':
     main()

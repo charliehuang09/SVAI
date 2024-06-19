@@ -6,7 +6,7 @@ from tqdm import trange
 from torch.utils.data import DataLoader
 from torchsummary import summary
 from logger import Logger
-from metrics import getConfusionMatrix, getAccuracy, getF1Score, getScatterPlot, getR2Score, remap
+from metrics import getConfusionMatrix, getAccuracy, getF1Score, getScatterPlot, getR2Score, writeRemap
 from config import log_frequency
 import warnings
 from typing import Literal
@@ -65,14 +65,14 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType 
             y = y.to(device)
             optimizer.zero_grad()
             outputs = model(x)
-            loss = loss_fn(outputs[:, 0], y)
+            loss = loss_fn(outputs, y)
             loss.backward()
             optimizer.step()
 
             if (epoch % log_frequency == 0):
                 trainLossLogger.add(loss.item(), len(x))
-                y_predTrain.extend(outputs.tolist())
-                y_trueTrain.extend(y.tolist())
+                y_predTrain.extend(outputs[:, 0].tolist())
+                y_trueTrain.extend(y[:, 0].tolist())
                 
                 if (modelType == 'Regression'):
                     pass
@@ -88,12 +88,12 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType 
             x = x.to(device)
             y = y.to(device)
             outputs = model(x)
-            loss = loss_fn(outputs[:, 0], y)
+            loss = loss_fn(outputs, y)
             
             if (epoch % log_frequency == 0):
                 validLossLogger.add(loss.item(), len(x))
-                y_predValid.extend(outputs.tolist())
-                y_trueValid.extend(y.tolist())
+                y_predValid.extend(outputs[:, 0].tolist())
+                y_trueValid.extend(y[:, 0].tolist())
                 
                 if (modelType == 'Regression'):
                     pass
@@ -116,8 +116,8 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType 
     if (modelType == 'Regression'):
         writer.add_figure("train/ScatterPlot", getScatterPlot(model, train_dataloader))
         writer.add_figure("valid/ScatterPlot", getScatterPlot(model, valid_dataloader))
-        writer.add_figure('train/Remap', remap(model, index=0))
-        writer.add_figure('valid/Remap', remap(model, index=-1))
+        writeRemap(model, writer)
+        writeRemap(model, writer)
     if (modelType == 'Classification'):
         writer.add_figure("train/ConfusionMatrix", getConfusionMatrix(model, train_dataloader))
         writer.add_figure("valid/ConfusionMatrix", getConfusionMatrix(model, valid_dataloader))

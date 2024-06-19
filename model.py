@@ -12,7 +12,7 @@ class Model(torch.nn.Module):
         for i in range(num_layers):
             self.layers.append(nn.Linear(layer_width, layer_width))
 
-        self.output = nn.Linear(layer_width, 1)
+        self.output = nn.Linear(layer_width, 9)
         
         self.dropout = nn.Dropout(dropout)
 

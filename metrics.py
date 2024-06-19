@@ -73,7 +73,7 @@ def scale(x, min, max):
     return x
 
 def remap(model, index=0):
-    dataset = Dataset("Train", 0.8, 'Regression', verbose=False)
+    dataset = Dataset("Train", 0.8, 'Regression', True, verbose=False)
     x_min = dataset.getxmin()
     x_max = dataset.getxmax()
     
@@ -119,7 +119,7 @@ def remap(model, index=0):
                 map[i][j] = np.nan
                 y[i][j] = np.nan
                 continue
-            map[i][j] = model(x[:, i, j])
+            map[i][j] = model(x[:, i, j])[0]
     
     return map, y
 def writeRemap(model, writer):
@@ -131,7 +131,6 @@ def writeRemap(model, writer):
     ground_truth_Valid = []
     for i in trange(120):
         map, y = remap(model, i)
-        print(map.shape)
         
         fig, ax = plt.subplots(1, 2)
     

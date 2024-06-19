@@ -81,17 +81,15 @@ class Dataset(Dataset):
             self.y = np.concatenate((a, b), axis=0) #y, variables
             self.x = self.x[:, :119, :, :]
             
-            print(self.x.shape)
-            print(self.y.shape)
+            if (verbose):
+                print(self.x.shape)
+                print(self.y.shape)
             
         self.x = self.x.reshape(8, -1)
         self.x = self.x.transpose()
         
         self.y = self.y.reshape(9, -1)
         self.y = self.y.transpose()
-        
-        print(self.x.shape)
-        print(self.y.shape)
         
         data = np.concatenate((self.x, self.y), axis=1)
         data = data[~np.isnan(data).any(axis=1), :]
@@ -144,11 +142,14 @@ class Dataset(Dataset):
     def __len__(self):
         return self.length
     def __getitem__(self, index):
-        return self.x[index], self.y[index, 0]
+        return self.x[index], self.y[index]
     
 def main():
     train_dataset = Dataset("Train", 0.8, 'Regression', True)
     valid_dataset = Dataset("Valid", 0.8, 'Classification', True)
+    
+    for batch in train_dataset:
+        x, y = batch
 
 if __name__=='__main__':
     main()

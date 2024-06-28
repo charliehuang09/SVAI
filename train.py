@@ -20,7 +20,7 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType 
 
     model = Model(num_layers, layer_width, dropout, modelType)
 
-    summary(model, (1, 8))
+    summary(model, (1, 9))
     
     model = model.to(device)
 

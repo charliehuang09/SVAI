@@ -6,7 +6,7 @@ class Model(torch.nn.Module):
         super().__init__()
 
         self.modelType : Literal['Regression', 'Classification'] = modelType
-        self.input = nn.Linear(8, layer_width)
+        self.input = nn.Linear(9, layer_width)
         
         self.layers = nn.ModuleList()
         for i in range(num_layers):

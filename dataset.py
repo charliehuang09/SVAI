@@ -76,16 +76,26 @@ class Dataset(Dataset):
         self.x = np.array(self.x, dtype=np.float32)
         
         if (shift):
-            a = self.y[np.newaxis, 1:, :, :]
-            b = self.x[:, 1:, :, :]
-            self.y = np.concatenate((a, b), axis=0) #y, variables
-            self.x = self.x[:, :119, :, :]
+            data = np.concatenate((self.y[np.newaxis, :], self.x), axis=0)
+            # print(np.concatenate((self.y[np.newaxis, :], self.x), axis=0).shape)
+            # print(np.concatenate((np.zeros((9, 1, 50, 32)), data), axis=1).shape)
+            # print(np.concatenate((data, np.zeros((9, 1, 50, 32))), axis=1).shape)
+            self.y = np.concatenate((np.zeros((9, 1, 50, 32)), data), axis=1)
+            self.x = np.concatenate((data, np.zeros((9, 1, 50, 32))), axis=1)
+            self.x = self.x.astype(np.float32)
+            self.y = self.y.astype(np.float32)
+            
+            # exit(0)
+            # a = self.y[np.newaxis, 1:, :, :]
+            # b = self.x[:, 1:, :, :]
+            # self.y = np.concatenate((a, b), axis=0) #y, variables
+            # self.x = self.x[:, :119, :, :]
             
             if (verbose):
                 print(self.x.shape)
                 print(self.y.shape)
             
-        self.x = self.x.reshape(8, -1)
+        self.x = self.x.reshape(9, -1)
         self.x = self.x.transpose()
         
         self.y = self.y.reshape(9, -1)
@@ -94,12 +104,12 @@ class Dataset(Dataset):
         data = np.concatenate((self.x, self.y), axis=1)
         data = data[~np.isnan(data).any(axis=1), :]
         
-        self.x = data[:, :8]
-        self.y = data[:, 8:]
+        self.x = data[:, :9]
+        self.y = data[:, 9:]
         
-        for i in range(8):
+        for i in range(9):
             self.x[:, i] = scale(self.x[:, i])
-            self.y[:, i + 1] = scale(self.y[:, i + 1])
+            self.y[:, i] = scale(self.y[:, i])
 
         if (modelType == 'Regression'):
             self.y[:, 0] = self.y[:, 0] / self.y[:, 0].mean()

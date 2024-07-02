@@ -66,12 +66,6 @@ class Dataset(Dataset):
         self.x.append(wind)
         self.x.append(soil_moisture)
         self.x.append(temperature)
-        
-        self.xmin = []
-        self.xmax = []
-        for element in self.x:
-            self.xmin.append(np.nanmin(element))
-            self.xmax.append(np.nanmax(element))
 
         self.x = np.array(self.x, dtype=np.float32)
         
@@ -80,8 +74,9 @@ class Dataset(Dataset):
             # print(np.concatenate((self.y[np.newaxis, :], self.x), axis=0).shape)
             # print(np.concatenate((np.zeros((9, 1, 50, 32)), data), axis=1).shape)
             # print(np.concatenate((data, np.zeros((9, 1, 50, 32))), axis=1).shape)
-            self.y = np.concatenate((np.zeros((9, 1, 50, 32)), data), axis=1)
-            self.x = np.concatenate((data, np.zeros((9, 1, 50, 32))), axis=1)
+            self.x = np.concatenate((np.zeros((9, 1, 50, 32)), data), axis=1)
+            self.y = np.concatenate((data, np.zeros((9, 1, 50, 32))), axis=1)
+            
             self.x = self.x.astype(np.float32)
             self.y = self.y.astype(np.float32)
             
@@ -106,6 +101,12 @@ class Dataset(Dataset):
         
         self.x = data[:, :9]
         self.y = data[:, 9:]
+        
+        self.xmin = []
+        self.xmax = []
+        for element in self.x.transpose():
+            self.xmin.append(np.nanmin(element))
+            self.xmax.append(np.nanmax(element))
         
         for i in range(9):
             self.x[:, i] = scale(self.x[:, i])

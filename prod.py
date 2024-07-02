@@ -36,6 +36,8 @@ def main():
         modelType=config.modelType,
         shift=config.shift
         )
+    
+    wandb.save('model.pt')
     wandb.finish()
 
 if __name__=='__main__':

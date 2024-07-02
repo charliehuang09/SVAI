@@ -113,10 +113,11 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType 
                 trainF1Logger.get()
                 validF1Logger.get()
     
+    torch.save(model, 'model.pt')
+    
     if (modelType == 'Regression'):
         writer.add_figure("train/ScatterPlot", getScatterPlot(model, train_dataloader))
         writer.add_figure("valid/ScatterPlot", getScatterPlot(model, valid_dataloader))
-        writeRemap(model, writer)
         writeRemap(model, writer)
     if (modelType == 'Classification'):
         writer.add_figure("train/ConfusionMatrix", getConfusionMatrix(model, train_dataloader))

@@ -1,6 +1,7 @@
 import config
 from sklearn.metrics import confusion_matrix
 from seaborn import heatmap
+import cv2
 from dataset import Dataset
 from torch.utils.data import DataLoader
 import numpy as np
@@ -15,6 +16,13 @@ import matplotlib
 import matplotlib.pyplot as plt
 from dataset import scale
 from tqdm import trange, tqdm
+import os
+
+def clear(path):
+    filelist = [ f for f in os.listdir(path) if f.endswith(".png") ]
+    for f in filelist:
+        os.remove(os.path.join(path, f))
+        
 def getConfusionMatrix(model, dataloader):
     device = config.device
     y_true = []
@@ -87,10 +95,11 @@ def remap(model, index=0):
     soil_moisture = pd.read_pickle('cleanedData/soil_moisture.pkl').iloc[index]
     fireCCIL1982_2018 = pd.read_pickle('cleanedData/fireCCIL1982-2018.pkl').iloc[index]
     
-    y = fireCCIL1982_2018
+    y = pd.read_pickle('cleanedData/fireCCIL1982-2018.pkl').iloc[index + 1]
     y = np.array(y)
     
     x = []
+    x.append(fireCCIL1982_2018)
     x.append(lightning)
     x.append(population)
     x.append(rain)
@@ -101,10 +110,10 @@ def remap(model, index=0):
     x.append(temperature)
     x = np.array(x, dtype=np.float32)
     
-    x = x.reshape(8, -1)
+    x = x.reshape(9, -1)
     for i in range(len(x)):
         x[i, :] = scale(x[i, :], x_min[i], x_max[i])
-    x = x.reshape(8, 50, 32)
+    x = x.reshape(9, 50, 32)
     
     y = y / np.nanmean(y)
     
@@ -129,7 +138,7 @@ def writeRemap(model, writer):
     
     predsValid = []
     ground_truth_Valid = []
-    for i in trange(120):
+    for i in trange(119):
         map, y = remap(model, i)
         
         fig, ax = plt.subplots(1, 2)
@@ -176,18 +185,69 @@ def writeRemap(model, writer):
     
     writer.add_figure("valid/RemapAverage", fig)
     
-        
-
-        
-        
     
 def main():
+    clear('metrics/train')
+    clear('metrics/valid')
     model = torch.load('model.pt')
-    writer = SummaryWriter()
     
-    writeRemap(model, writer)
+    predsTrain = []
+    ground_truth_Train = []
     
-    writer.flush()
+    predsValid = []
+    ground_truth_Valid = []
+    for i in trange(119):
+        map, y = remap(model, i)
+        
+        if (i <= config.train_test_split * 120):
+            predsTrain.append(map)
+            ground_truth_Train.append(y)
+        else:
+            predsValid.append(map)
+            ground_truth_Valid.append(y)
+    
+    predsTrain = np.array(predsTrain)
+    ground_truth_Train = np.array(ground_truth_Train)
+    
+    predsValid = np.array(predsValid)
+    ground_truth_Valid = np.array(ground_truth_Valid)
+    
+    print(predsTrain.shape, ground_truth_Train.shape)
+    print(predsValid.shape, ground_truth_Valid.shape)
+    
+    for i in range(len(predsTrain)):
+        fig, ax = plt.subplots(1, 2)
+        canvas = fig.canvas
+
+        ax[0].imshow(predsTrain[i])
+        ax[0].set_title("Predictions")
+        
+        ax[1].imshow(ground_truth_Train[i])
+        ax[1].set_title("Ground Truth")
+        
+        canvas.draw()
+        image_flat = np.frombuffer(canvas.tostring_rgb(), dtype='uint8')
+        image = image_flat.reshape((480*2, 640*2, 3))
+        cv2.imwrite(f'metrics/train/{i}.png', image)
+        plt.close()
+    
+    for i in range(len(predsValid)):
+        fig, ax = plt.subplots(1, 2)
+        canvas = fig.canvas
+
+        ax[0].imshow(predsValid[i])
+        ax[0].set_title("Predictions")
+        
+        ax[1].imshow(predsValid[i])
+        ax[1].set_title("Ground Truth")
+        
+        canvas.draw()
+        image_flat = np.frombuffer(canvas.tostring_rgb(), dtype='uint8')
+        image = image_flat.reshape((480*2, 640*2, 3))
+        cv2.imwrite(f'metrics/valid/{i}.png', image)
+        plt.close()
+    
+    
     
 
 if __name__=='__main__':

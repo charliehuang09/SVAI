@@ -2,6 +2,7 @@ import config
 from sklearn.metrics import confusion_matrix
 from seaborn import heatmap
 import cv2
+import glob
 from dataset import Dataset
 from torch.utils.data import DataLoader
 import numpy as np
@@ -17,6 +18,11 @@ import matplotlib.pyplot as plt
 from dataset import scale
 from tqdm import trange, tqdm
 import os
+import warnings
+import imageio
+
+warnings.filterwarnings("ignore")
+
 
 def clear(path):
     filelist = [ f for f in os.listdir(path) if f.endswith(".png") ]
@@ -185,6 +191,13 @@ def writeRemap(model, writer):
     
     writer.add_figure("valid/RemapAverage", fig)
     
+def writeVideo(imagePath, videoPath):
+    writer = imageio.get_writer(videoPath, fps=2)
+    for file in tqdm(sorted(glob.glob(os.path.join(imagePath, f'*.png')))):
+        im = imageio.imread(file)
+        writer.append_data(im)
+    writer.close()
+    
     
 def main():
     clear('metrics/train')
@@ -247,7 +260,8 @@ def main():
         cv2.imwrite(f'metrics/valid/{i}.png', image)
         plt.close()
     
-    
+    writeVideo('metrics/train', 'metrics/train.mp4')
+    writeVideo('metrics/valid', 'metrics/valid.mp4')
     
 
 if __name__=='__main__':

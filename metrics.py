@@ -240,7 +240,7 @@ def main():
         
         canvas.draw()
         image_flat = np.frombuffer(canvas.tostring_rgb(), dtype='uint8')
-        image = image_flat.reshape((480*2, 640*2, 3))
+        image = image_flat.reshape((480, 640, 3))
         cv2.imwrite(f'metrics/train/{i}.png', image)
         plt.close()
     
@@ -256,7 +256,7 @@ def main():
         
         canvas.draw()
         image_flat = np.frombuffer(canvas.tostring_rgb(), dtype='uint8')
-        image = image_flat.reshape((480*2, 640*2, 3))
+        image = image_flat.reshape((480, 640, 3))
         cv2.imwrite(f'metrics/valid/{i}.png', image)
         plt.close()
     

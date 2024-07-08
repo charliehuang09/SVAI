@@ -28,18 +28,23 @@ def scale(x):
 
 class Dataset(Dataset):
     def __init__(self, type: Literal["Train", "Valid"], train_test_split, modelType : Literal['Regression', 'Classification'], shift=False, verbose=True):
+        if (type == 'Train'):
+            years = (0, int(120 * train_test_split))
+        if (type == 'Valid'):
+            years = (int(120 * train_test_split), 120)
         if (verbose):
+            print(f"Range: {years[0]}-{years[1]}")
             print(f"Loading {type} Dataset")
-        lightning = pd.read_pickle('cleanedData/lightning.pkl').to_numpy()
-        population = pd.read_pickle('cleanedData/population.pkl').to_numpy()
-        rain = pd.read_pickle('cleanedData/rain.pkl').to_numpy()
-        biomass = pd.read_pickle('cleanedData/biomass.pkl').to_numpy()
-        temperature = pd.read_pickle('cleanedData/temperature.pkl').to_numpy()
-        humidity = pd.read_pickle('cleanedData/humidity.pkl').to_numpy()
-        wind = pd.read_pickle('cleanedData/wind.pkl').to_numpy()
-        soil_moisture = pd.read_pickle('cleanedData/soil_moisture.pkl').to_numpy()
-        fireCCIL1982_2018 = pd.read_pickle('cleanedData/fireCCIL1982-2018.pkl').to_numpy()
-        mcd64 = pd.read_pickle('cleanedData/MCD64.pkl').to_numpy()
+        lightning = pd.read_pickle('cleanedData/lightning.pkl').iloc[years[0]:years[1]].to_numpy()
+        population = pd.read_pickle('cleanedData/population.pkl').iloc[years[0]:years[1]].to_numpy()
+        rain = pd.read_pickle('cleanedData/rain.pkl').iloc[years[0]:years[1]].to_numpy()
+        biomass = pd.read_pickle('cleanedData/biomass.pkl').iloc[years[0]:years[1]].to_numpy()
+        temperature = pd.read_pickle('cleanedData/temperature.pkl').iloc[years[0]:years[1]].to_numpy()
+        humidity = pd.read_pickle('cleanedData/humidity.pkl').iloc[years[0]:years[1]].to_numpy()
+        wind = pd.read_pickle('cleanedData/wind.pkl').iloc[years[0]:years[1]].to_numpy()
+        soil_moisture = pd.read_pickle('cleanedData/soil_moisture.pkl').iloc[years[0]:years[1]].to_numpy()
+        fireCCIL1982_2018 = pd.read_pickle('cleanedData/fireCCIL1982-2018.pkl').iloc[years[0]:years[1]].to_numpy()
+        mcd64 = pd.read_pickle('cleanedData/MCD64.pkl').iloc[years[0]:years[1]].to_numpy()
 
         lightning = to_numpy(lightning)
         population = to_numpy(population)
@@ -71,20 +76,11 @@ class Dataset(Dataset):
         
         if (shift):
             data = np.concatenate((self.y[np.newaxis, :], self.x), axis=0)
-            # print(np.concatenate((self.y[np.newaxis, :], self.x), axis=0).shape)
-            # print(np.concatenate((np.zeros((9, 1, 50, 32)), data), axis=1).shape)
-            # print(np.concatenate((data, np.zeros((9, 1, 50, 32))), axis=1).shape)
             self.x = np.concatenate((np.zeros((9, 1, 50, 32)), data), axis=1)
             self.y = np.concatenate((data, np.zeros((9, 1, 50, 32))), axis=1)
             
             self.x = self.x.astype(np.float32)
             self.y = self.y.astype(np.float32)
-            
-            # exit(0)
-            # a = self.y[np.newaxis, 1:, :, :]
-            # b = self.x[:, 1:, :, :]
-            # self.y = np.concatenate((a, b), axis=0) #y, variables
-            # self.x = self.x[:, :119, :, :]
             
             if (verbose):
                 print(self.x.shape)
@@ -120,18 +116,6 @@ class Dataset(Dataset):
         
         self.x = torch.from_numpy(self.x)
         self.y = torch.from_numpy(self.y)
-
-        if (type == "Train"):
-            if (verbose):
-                print(f"Train Range: 0-{int(len(self.x) * train_test_split)}")
-            self.x = self.x[:int(len(self.x) * train_test_split)]
-            self.y = self.y[:int(len(self.y) * train_test_split)]
-
-        if (type == "Valid"):
-            if (verbose):
-                print(f"Valid Range: {int(len(self.x) * train_test_split)}-{len(self.x)}")
-            self.x = self.x[int(len(self.x) * train_test_split):]
-            self.y = self.y[int(len(self.y) * train_test_split):]
 
         assert len(self.y) == len(self.x)
         self.length = len(self.x)

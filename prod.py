@@ -2,6 +2,7 @@ import wandb
 import train
 import config
 import argparse
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('name')

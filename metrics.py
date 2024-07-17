@@ -202,6 +202,13 @@ def writeVideo(imagePath, videoPath):
 def main():
     clear('metrics/train')
     clear('metrics/valid')
+    
+    if os.path.exists('metrics/train.mp4'):
+        os.remove('metrics/train.mp4')
+    
+    if os.path.exists('metrics/valid.mp4'):
+        os.remove('metrics/valid.mp4')
+    
     model = torch.load('model.pt')
     
     predsTrain = []
@@ -240,7 +247,7 @@ def main():
         
         canvas.draw()
         image_flat = np.frombuffer(canvas.tostring_rgb(), dtype='uint8')
-        image = image_flat.reshape((480, 640, 3))
+        image = image_flat.reshape((480, 640 * 4, 3))[:, :640 * 2, :]
         cv2.imwrite(f'metrics/train/{i}.png', image)
         plt.close()
     
@@ -256,7 +263,7 @@ def main():
         
         canvas.draw()
         image_flat = np.frombuffer(canvas.tostring_rgb(), dtype='uint8')
-        image = image_flat.reshape((480, 640, 3))
+        image = image_flat.reshape((480, 640 * 4, 3))[:, :640 * 2, :]
         cv2.imwrite(f'metrics/valid/{i}.png', image)
         plt.close()
     

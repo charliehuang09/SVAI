@@ -145,6 +145,7 @@ def main():
     
     for batch in train_dataset:
         x, y = batch
-
+        x, y = valid_dataset
+        
 if __name__=='__main__':
     main()

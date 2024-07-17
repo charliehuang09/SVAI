@@ -245,11 +245,7 @@ def main():
         ax[1].imshow(ground_truth_Train[i])
         ax[1].set_title("Ground Truth")
         
-        canvas.draw()
-        image_flat = np.frombuffer(canvas.tostring_rgb(), dtype='uint8')
-        image = image_flat.reshape((480, 640 * 4, 3))[:, :640 * 2, :]
-        cv2.imwrite(f'metrics/train/{i}.png', image)
-        plt.close()
+        fig.savefig(f'metrics/train/{i}.png')
     
     for i in range(len(predsValid)):
         fig, ax = plt.subplots(1, 2)
@@ -261,11 +257,7 @@ def main():
         ax[1].imshow(predsValid[i])
         ax[1].set_title("Ground Truth")
         
-        canvas.draw()
-        image_flat = np.frombuffer(canvas.tostring_rgb(), dtype='uint8')
-        image = image_flat.reshape((480, 640 * 4, 3))[:, :640 * 2, :]
-        cv2.imwrite(f'metrics/valid/{i}.png', image)
-        plt.close()
+        fig.savefig(f'metrics/valid/{i}.png')
     
     writeVideo('metrics/train', 'metrics/train.mp4')
     writeVideo('metrics/valid', 'metrics/valid.mp4')

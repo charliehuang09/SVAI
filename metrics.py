@@ -198,7 +198,15 @@ def writeVideo(imagePath, videoPath):
         writer.append_data(im)
     writer.close()
     
-    
+def writeScatter(x, y, path):
+    x = x.flatten()
+    y = y.flatten()
+    print(x.shape, y.shape)
+    fig, ax = plt.subplots(1, 1)
+    ax.scatter(x, y)
+    ax.plot(np.linspace(0, 40, 100))
+    fig.savefig(path)
+
 def main():
     clear('metrics/train')
     clear('metrics/valid')

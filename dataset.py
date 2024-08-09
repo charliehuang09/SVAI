@@ -35,6 +35,8 @@ class Dataset(Dataset):
         if (verbose):
             print(f"Range: {years[0]}-{years[1]}")
             print(f"Loading {type} Dataset")
+            
+        #load data
         lightning = pd.read_pickle('cleanedData/lightning.pkl').iloc[years[0]:years[1]].to_numpy()
         population = pd.read_pickle('cleanedData/population.pkl').iloc[years[0]:years[1]].to_numpy()
         rain = pd.read_pickle('cleanedData/rain.pkl').iloc[years[0]:years[1]].to_numpy()
@@ -46,6 +48,7 @@ class Dataset(Dataset):
         fireCCIL1982_2018 = pd.read_pickle('cleanedData/fireCCIL1982-2018.pkl').iloc[years[0]:years[1]].to_numpy()
         mcd64 = pd.read_pickle('cleanedData/MCD64.pkl').iloc[years[0]:years[1]].to_numpy()
 
+        #convert to numpy
         lightning = to_numpy(lightning)
         population = to_numpy(population)
         rain = to_numpy(rain)
@@ -62,6 +65,7 @@ class Dataset(Dataset):
         if (modelType == 'Classification'):
             self.y = mcd64 #Classification
         
+        #concatonate to list
         self.x = []
         self.x.append(lightning)
         self.x.append(population)
@@ -74,6 +78,7 @@ class Dataset(Dataset):
 
         self.x = np.array(self.x, dtype=np.float32)
         
+        #shift to array to make predictions be of one month ahead
         if (shift):
             data = np.concatenate((self.y[np.newaxis, :], self.x), axis=0)
             self.x = np.concatenate((np.zeros((9, 1, 50, 32)), data), axis=1)
@@ -85,7 +90,8 @@ class Dataset(Dataset):
             if (verbose):
                 print(self.x.shape)
                 print(self.y.shape)
-            
+        
+        #delete nans
         self.x = self.x.reshape(9, -1)
         self.x = self.x.transpose()
         
@@ -98,25 +104,30 @@ class Dataset(Dataset):
         self.x = data[:, :9]
         self.y = data[:, 9:]
         
+        #set xmin and xmax variables
         self.xmin = []
         self.xmax = []
         for element in self.x.transpose():
             self.xmin.append(np.nanmin(element))
             self.xmax.append(np.nanmax(element))
         
+        #scale
         for i in range(9):
             self.x[:, i] = scale(self.x[:, i])
             self.y[:, i] = scale(self.y[:, i])
 
+        #divide y by mean
         if (modelType == 'Regression'):
             self.y[:, 0] = self.y[:, 0] / self.y[:, 0].mean()
             pass
         if (modelType == 'Classification'):
             pass
         
+        #convert from numpy to torch
         self.x = torch.from_numpy(self.x)
         self.y = torch.from_numpy(self.y)
 
+        #small test
         assert len(self.y) == len(self.x)
         self.length = len(self.x)
         
@@ -126,6 +137,7 @@ class Dataset(Dataset):
             print(f"Length: {self.length}")
             print("Finished Loading Dataset\n")
     
+    #info functions
     def getx(self):
         return self.x
     def gety(self):
@@ -140,6 +152,7 @@ class Dataset(Dataset):
         return self.x[index], self.y[index]
     
 def main():
+    #test
     train_dataset = Dataset("Train", 0.8, 'Regression', True)
     valid_dataset = Dataset("Valid", 0.8, 'Classification', True)
     

@@ -3,6 +3,14 @@ import numpy as np
 import datetime
 import cv2
 
+
+def scale(df):
+    min = np.nanmin(np.array(df.tolist()))
+    max = np.nanmax(np.array(df.tolist()))
+    df = df.map(lambda x: ((x - min) / (max - min)))
+    
+    return df
+
 def to_datetime(input):
     output = []
     for time in input:

@@ -112,9 +112,9 @@ class Dataset(Dataset):
             self.xmax.append(np.nanmax(element))
         
         #scale
-        for i in range(9):
-            self.x[:, i] = scale(self.x[:, i])
-            self.y[:, i] = scale(self.y[:, i])
+        # for i in range(9):
+        #     self.x[:, i] = scale(self.x[:, i])
+        #     self.y[:, i] = scale(self.y[:, i])
 
         #divide y by mean
         if (modelType == 'Regression'):

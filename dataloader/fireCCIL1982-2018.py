@@ -50,7 +50,8 @@ def main():
     df = df[df.index < datetime.datetime(year=2011, month=1, day=1)]
     
     df = scale(df)    
-    assert np.nanmax(np.array(df.tolist())) == 1, f"Max after rescaling is {np.nanmax(np.array(df.tolist()))}"
+    df = df.map(lambda x: x * 40)
+    assert np.nanmax(np.array(df.tolist())) == 40, f"Max after rescaling is {np.nanmax(np.array(df.tolist()))}"
 
     df.to_pickle("../cleanedData/fireCCIL1982-2018.pkl")
 

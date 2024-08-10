@@ -12,10 +12,8 @@ from dataset import Dataset
 import torch
 import pandas as pd
 from model import Model
-from sklearn.preprocessing import MinMaxScaler
 import matplotlib
 import matplotlib.pyplot as plt
-from dataset import scale
 from tqdm import trange, tqdm
 import os
 import warnings
@@ -105,11 +103,6 @@ def remap(model, index=0):
     x.append(soil_moisture)
     x.append(temperature)
     x = np.array(x, dtype=np.float32)
-    
-    x = x.reshape(9, -1)
-    for i in range(len(x)):
-        x[i, :] = scale(x[i, :], x_min[i], x_max[i])
-    x = x.reshape(9, 50, 32)
     
     y = y / np.nanmean(y)
     

@@ -111,18 +111,6 @@ class Dataset(Dataset):
             self.xmin.append(np.nanmin(element))
             self.xmax.append(np.nanmax(element))
         
-        #scale
-        # for i in range(9):
-        #     self.x[:, i] = scale(self.x[:, i])
-        #     self.y[:, i] = scale(self.y[:, i])
-
-        #divide y by mean
-        if (modelType == 'Regression'):
-            self.y[:, 0] = self.y[:, 0] / self.y[:, 0].mean()
-            pass
-        if (modelType == 'Classification'):
-            pass
-        
         #convert from numpy to torch
         self.x = torch.from_numpy(self.x)
         self.y = torch.from_numpy(self.y)
@@ -158,7 +146,6 @@ def main():
     
     for batch in train_dataset:
         x, y = batch
-        x, y = valid_dataset
         
 if __name__=='__main__':
     main()

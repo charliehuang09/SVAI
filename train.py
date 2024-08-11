@@ -18,23 +18,28 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType 
 
     print(f"Model Type: {modelType}")
 
+    #instantiate model
     model = Model(num_layers, layer_width, dropout, modelType)
 
+    #print summary of model
     summary(model, (1, 9))
     
     model = model.to(device)
 
+    #instantiate dataset
     train_dataset = Dataset("Train", train_test_split=train_test_split, modelType=modelType, shift=shift)
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size)
 
     valid_dataset = Dataset("Valid", train_test_split=train_test_split, modelType=modelType, shift=shift)
     valid_dataloader = DataLoader(valid_dataset, batch_size=batch_size)
 
+    #instantiate optimizer
     if (optimizer == "Adam"):
         optimizer = optim.Adam(model.parameters(), lr=lr)
     if (optimizer == "SGD"):
         optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9)
 
+    #instantiate loss and logger
     loss_fn = None
     writer = SummaryWriter()
     if (modelType == 'Regression'):
@@ -55,7 +60,9 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType 
     trainLossLogger = Logger(writer, "train/Loss")
     validLossLogger = Logger(writer, "valid/Loss")
 
+    #train model
     for epoch in range(epochs):
+        #train
         y_predTrain = []
         y_trueTrain = []
         model.train()
@@ -69,6 +76,7 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType 
             loss.backward()
             optimizer.step()
 
+            #log metrics
             if (epoch % log_frequency == 0):
                 trainLossLogger.add(loss.item(), len(x))
                 y_predTrain.extend(outputs[:, 0].tolist())
@@ -80,6 +88,7 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType 
                     trainAccuracyLogger.add(getAccuracy(outputs, y), 1)
                     trainF1Logger.add(getF1Score(outputs, y), 1)
 
+        #valid
         y_predValid = []
         y_trueValid = []
         model.eval()
@@ -90,6 +99,7 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType 
             outputs = model(x)
             loss = loss_fn(outputs, y)
             
+            #log metrics
             if (epoch % log_frequency == 0):
                 validLossLogger.add(loss.item(), len(x))
                 y_predValid.extend(outputs[:, 0].tolist())
@@ -115,6 +125,7 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType 
     
     torch.save(model, 'model.pt')
     
+    #write scatter plot or confusin matrix
     if (modelType == 'Regression'):
         writer.add_figure("train/ScatterPlot", getScatterPlot(model, train_dataloader))
         writer.add_figure("valid/ScatterPlot", getScatterPlot(model, valid_dataloader))

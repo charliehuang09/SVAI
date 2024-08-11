@@ -11,8 +11,17 @@ from config import log_frequency
 import warnings
 from typing import Literal
 from torch.utils.tensorboard import SummaryWriter
-warnings.filterwarnings("ignore", message="torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.")
-def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType : Literal['Regression', 'Classification'], num_layers, layer_width, dropout, shift):
+
+warnings.filterwarnings(
+    "ignore",
+    message=
+    "torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead."
+)
+
+
+def main(lr, optimizer, batch_size, epochs, train_test_split, device,
+         modelType: Literal['Regression', 'Classification'], num_layers,
+         layer_width, dropout, shift):
     torch.manual_seed(16312942289339198420)
     print(f"Seed: {torch.initial_seed()}")
 
@@ -23,14 +32,20 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType 
 
     #print summary of model
     summary(model, (1, 9))
-    
+
     model = model.to(device)
 
     #instantiate dataset
-    train_dataset = Dataset("Train", train_test_split=train_test_split, modelType=modelType, shift=shift)
+    train_dataset = Dataset("Train",
+                            train_test_split=train_test_split,
+                            modelType=modelType,
+                            shift=shift)
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size)
 
-    valid_dataset = Dataset("Valid", train_test_split=train_test_split, modelType=modelType, shift=shift)
+    valid_dataset = Dataset("Valid",
+                            train_test_split=train_test_split,
+                            modelType=modelType,
+                            shift=shift)
     valid_dataloader = DataLoader(valid_dataset, batch_size=batch_size)
 
     #instantiate optimizer
@@ -43,13 +58,13 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType 
     loss_fn = None
     writer = SummaryWriter()
     if (modelType == 'Regression'):
-        loss_fn = torch.nn.MSELoss() #Regression
+        loss_fn = torch.nn.MSELoss()  #Regression
 
         trainR2Logger = Logger(writer, "train/R2")
         validR2Logger = Logger(writer, "valid/R2")
 
     if (modelType == 'Classification'):
-        loss_fn = torch.nn.CrossEntropyLoss() #Classification
+        loss_fn = torch.nn.CrossEntropyLoss()  #Classification
 
         trainAccuracyLogger = Logger(writer, "train/Accuracy")
         validAccuracyLogger = Logger(writer, "valid/Accuracy")
@@ -81,7 +96,7 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType 
                 trainLossLogger.add(loss.item(), len(x))
                 y_predTrain.extend(outputs[:, 0].tolist())
                 y_trueTrain.extend(y[:, 0].tolist())
-                
+
                 if (modelType == 'Regression'):
                     pass
                 if (modelType == 'Classification'):
@@ -98,13 +113,13 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType 
             y = y.to(device)
             outputs = model(x)
             loss = loss_fn(outputs, y)
-            
+
             #log metrics
             if (epoch % log_frequency == 0):
                 validLossLogger.add(loss.item(), len(x))
                 y_predValid.extend(outputs[:, 0].tolist())
                 y_trueValid.extend(y[:, 0].tolist())
-                
+
                 if (modelType == 'Regression'):
                     pass
                 if (modelType == 'Classification'):
@@ -112,45 +127,51 @@ def main(lr, optimizer, batch_size, epochs, train_test_split, device, modelType 
                     validF1Logger.add(getF1Score(outputs, y), 1)
         if (epoch % log_frequency == 0):
             if (modelType == 'Regression'):
-                print(f"Epoch: {epoch} Train Loss: {trainLossLogger.get()} Valid Loss: {validLossLogger.get()} TrainR2: {getR2Score(y_predTrain, y_trueTrain)} ValidR2: {getR2Score(y_predValid, y_trueValid)}")
+                print(
+                    f"Epoch: {epoch} Train Loss: {trainLossLogger.get()} Valid Loss: {validLossLogger.get()} TrainR2: {getR2Score(y_predTrain, y_trueTrain)} ValidR2: {getR2Score(y_predValid, y_trueValid)}"
+                )
 
                 trainR2Logger.write(getR2Score(y_predTrain, y_trueTrain))
                 validR2Logger.write(getR2Score(y_predValid, y_trueValid))
 
             if (modelType == 'Classification'):
-                print(f"Epoch: {epoch} Train Loss: {trainLossLogger.get()} Valid Loss: {validLossLogger.get()}Train Accuracy: {trainAccuracyLogger.get()} Valid Accuracy: {validAccuracyLogger.get()}")
-                
+                print(
+                    f"Epoch: {epoch} Train Loss: {trainLossLogger.get()} Valid Loss: {validLossLogger.get()}Train Accuracy: {trainAccuracyLogger.get()} Valid Accuracy: {validAccuracyLogger.get()}"
+                )
+
                 trainF1Logger.get()
                 validF1Logger.get()
-    
-    torch.save(model, 'model.pt')
-    
-    #write scatter plot or confusin matrix
-    if (modelType == 'Regression'):
-        writer.add_figure("train/ScatterPlot", getScatterPlot(model, train_dataloader))
-        writer.add_figure("valid/ScatterPlot", getScatterPlot(model, valid_dataloader))
-        writeRemap(model, writer)
-    if (modelType == 'Classification'):
-        writer.add_figure("train/ConfusionMatrix", getConfusionMatrix(model, train_dataloader))
-        writer.add_figure("valid/ConfusionMatrix", getConfusionMatrix(model, valid_dataloader))
-    
-    writer.flush()
-    
+
     torch.save(model, 'model.pt')
 
-if __name__=='__main__':
+    #write scatter plot or confusin matrix
+    if (modelType == 'Regression'):
+        writer.add_figure("train/ScatterPlot",
+                          getScatterPlot(model, train_dataloader))
+        writer.add_figure("valid/ScatterPlot",
+                          getScatterPlot(model, valid_dataloader))
+        writeRemap(model, writer)
+    if (modelType == 'Classification'):
+        writer.add_figure("train/ConfusionMatrix",
+                          getConfusionMatrix(model, train_dataloader))
+        writer.add_figure("valid/ConfusionMatrix",
+                          getConfusionMatrix(model, valid_dataloader))
+
+    writer.flush()
+
+    torch.save(model, 'model.pt')
+
+
+if __name__ == '__main__':
     import config
-    main(
-        lr=config.lr, 
-        optimizer=config.optimizer, 
-        batch_size=config.batch_size ,
-        epochs=config.epochs,
-        num_layers=config.num_layers,
-        layer_width=config.layer_width,
-        dropout=config.dropout,
-        
-        device=config.device,
-        train_test_split=config.train_test_split,
-        modelType=config.modelType,
-        shift=config.shift
-        )
+    main(lr=config.lr,
+         optimizer=config.optimizer,
+         batch_size=config.batch_size,
+         epochs=config.epochs,
+         num_layers=config.num_layers,
+         layer_width=config.layer_width,
+         dropout=config.dropout,
+         device=config.device,
+         train_test_split=config.train_test_split,
+         modelType=config.modelType,
+         shift=config.shift)

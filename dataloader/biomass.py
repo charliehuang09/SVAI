@@ -5,9 +5,10 @@ from datetime import datetime
 from misc import *
 import pandas as pd
 
+
 def main():
     print("Loading Biomass")
-    path='../data/forcing_data/biomass.nc'
+    path = '../data/forcing_data/biomass.nc'
     data = xr.open_dataset(path)
     index = data.time.values
     dataset = data.biomass.values
@@ -27,13 +28,15 @@ def main():
 
     df = df[df.index > datetime.datetime(year=2001, month=1, day=1)]
     df = df[df.index < datetime.datetime(year=2011, month=1, day=1)]
-    
-    df = scale(df)    
-    assert np.nanmax(np.array(df.tolist())) == 1, f"Max after rescaling is {np.nanmax(np.array(df.tolist()))}"
+
+    df = scale(df)
+    assert np.nanmax(np.array(df.tolist(
+    ))) == 1, f"Max after rescaling is {np.nanmax(np.array(df.tolist()))}"
 
     df.to_pickle("../cleanedData/biomass.pkl")
 
     print("Finished Loading Biomass")
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     main()

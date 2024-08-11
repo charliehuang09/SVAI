@@ -8,8 +8,9 @@ def scale(df):
     min = np.nanmin(np.array(df.tolist()))
     max = np.nanmax(np.array(df.tolist()))
     df = df.map(lambda x: ((x - min) / (max - min)))
-    
+
     return df
+
 
 def to_datetime(input):
     output = []
@@ -20,14 +21,15 @@ def to_datetime(input):
         hour = time.hour
         minute = time.minute
         second = time.second
-        output.append(datetime.datetime(
-            year=year,
-            month=month,
-            day=day,
-            hour=hour,
-            minute=minute,
-            second=second,
-        ))
+        output.append(
+            datetime.datetime(
+                year=year,
+                month=month,
+                day=day,
+                hour=hour,
+                minute=minute,
+                second=second,
+            ))
     return output
 
 
@@ -37,6 +39,7 @@ def resize(input):
         output.append(cv2.resize(input[idx], (144, 96)))
     output = np.array(output)
     return output
+
 
 def to_africa(data):
     data = data[:, 20:70, :]

@@ -5,9 +5,10 @@ from datetime import datetime
 import pandas as pd
 from misc import *
 
+
 def main():
     print("Loading Temperature")
-    path='../data/forcing_data/temperature.nc'
+    path = '../data/forcing_data/temperature.nc'
     data = xr.open_dataset(path)
     index = data.time.values
     dataset = data.TBOT.values
@@ -25,13 +26,15 @@ def main():
 
     df = df[df.index > datetime.datetime(year=2001, month=1, day=1)]
     df = df[df.index < datetime.datetime(year=2011, month=1, day=1)]
-    
-    df = scale(df)    
-    assert np.nanmax(np.array(df.tolist())) == 1, f"Max after rescaling is {np.nanmax(np.array(df.tolist()))}"
-    
+
+    df = scale(df)
+    assert np.nanmax(np.array(df.tolist(
+    ))) == 1, f"Max after rescaling is {np.nanmax(np.array(df.tolist()))}"
+
     df.to_pickle("../cleanedData/temperature.pkl")
 
     print("Finished Loading Temperature")
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     main()

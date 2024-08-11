@@ -6,9 +6,10 @@ import pandas as pd
 from misc import *
 import matplotlib.pyplot as plt
 
+
 def main():
     print("Loading Population")
-    path='../data/forcing_data/population.nc'
+    path = '../data/forcing_data/population.nc'
     data = xr.open_dataset(path)
     index = data.time.values
     dataset = data.hdm.values
@@ -16,7 +17,7 @@ def main():
     dataset = resize(dataset)
     dataset = np.dstack((dataset[:, :, 72:], dataset[:, :, :72]))
     dataset = to_africa(dataset)
-    
+
     dataset = dataset.tolist()
 
     index = to_datetime(index)
@@ -29,11 +30,14 @@ def main():
     df = df[df.index > datetime.datetime(year=2001, month=1, day=1)]
     df = df[df.index < datetime.datetime(year=2011, month=1, day=1)]
 
-    df = scale(df)    
-    assert np.nanmax(np.array(df.tolist())) == 1, f"Max after rescaling is {np.nanmax(np.array(df.tolist()))}"
-    
+    df = scale(df)
+    assert np.nanmax(np.array(df.tolist(
+    ))) == 1, f"Max after rescaling is {np.nanmax(np.array(df.tolist()))}"
+
     df.to_pickle("../cleanedData/population.pkl")
 
     print("Finished Loading Population")
-if __name__=='__main__':
+
+
+if __name__ == '__main__':
     main()

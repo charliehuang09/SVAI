@@ -4,12 +4,14 @@ import numpy as np
 import pandas as pd
 from misc import *
 
+
 def to_datetime(index):
     output = []
     for element in index:
         output.append(element.astype(datetime.datetime))
     output = np.array(output)
     return output
+
 
 def remove_zeros(dataset):
     print("Removing Zeros")
@@ -21,21 +23,22 @@ def remove_zeros(dataset):
             if (not np.any(dataset[i][j])):
                 dataset[i][j] = np.nan
     dataset = np.swapaxes(dataset, 0, 2)
-    
+
     print(f"Before: {np.nanmean(dataset)}")
     return dataset
 
+
 def main():
     print("Loading fireCCIL")
-    path='../data/burned_area_data/FireCCILT11-1982-2018_T62.nc'
+    path = '../data/burned_area_data/FireCCILT11-1982-2018_T62.nc'
     data = xr.open_dataset(path)
     index = data.time.values
     dataset = data.BA.values
     dataset = np.flip(dataset, axis=1)
     dataset = to_africa(dataset)
-    
+
     dataset = remove_zeros(dataset)
-    dataset[dataset > 2e6] =  np.nan
+    dataset[dataset > 2e6] = np.nan
 
     dataset = dataset.tolist()
 
@@ -48,15 +51,16 @@ def main():
 
     df = df[df.index > datetime.datetime(year=2001, month=1, day=1)]
     df = df[df.index < datetime.datetime(year=2011, month=1, day=1)]
-    
-    df = scale(df)    
+
+    df = scale(df)
     df = df.map(lambda x: x * 40)
-    assert np.nanmax(np.array(df.tolist())) == 40, f"Max after rescaling is {np.nanmax(np.array(df.tolist()))}"
+    assert np.nanmax(np.array(df.tolist(
+    ))) == 40, f"Max after rescaling is {np.nanmax(np.array(df.tolist()))}"
 
     df.to_pickle("../cleanedData/fireCCIL1982-2018.pkl")
 
     print("Finished Loading FireCCIL")
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     main()

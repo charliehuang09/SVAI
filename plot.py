@@ -151,8 +151,11 @@ def main():
                 np.nanmean(np.array((ground_truth_Train, predsTrain))) +
                 np.nanmean(np.array((ground_truth_Valid, predsValid))) / 2)
     print(min_, max_, mean_)
-
-    max_ = 25
+    # min_ = 0
+    # max_ = 45
+    
+    cmap = "Blues"
+    cmapDiff = "Blues"
 
     for i in range(len(predsTrain)):
         fig, ax = plt.subplots(1, 3)
@@ -162,13 +165,13 @@ def main():
         fig.suptitle(f'Index: {i}')
 
         ax0img = ax[0].imshow(predsTrain[i],
-                              cmap=plt.colormaps.get_cmap("BrBG"),
+                              cmap=plt.colormaps.get_cmap(cmap),
                               vmin=min_,
                               vmax=max_)
         ax[0].set_title("Predictions")
 
         ax1img = ax[1].imshow(ground_truth_Train[i],
-                              cmap=plt.colormaps.get_cmap("BrBG"),
+                              cmap=plt.colormaps.get_cmap(cmap),
                               vmin=min_,
                               vmax=max_)
         ax[1].set_title("Ground Truth")
@@ -176,7 +179,7 @@ def main():
         plt.colorbar(ax0img, ax=ax.ravel().tolist()[:2])
 
         ax2img = ax[2].imshow(abs(ground_truth_Train[i] - predsTrain[i]),
-                              cmap=plt.colormaps.get_cmap("CMRmap"),
+                              cmap=plt.colormaps.get_cmap(cmapDiff),
                               vmin=min_,
                               vmax=max_)
         ax[2].set_title("Difference")
@@ -194,13 +197,13 @@ def main():
         fig.suptitle(f'Index: {i}')
 
         ax0img = ax[0].imshow(predsValid[i],
-                              cmap=plt.colormaps.get_cmap("BrBG"),
+                              cmap=plt.colormaps.get_cmap(cmap),
                               vmin=min_,
                               vmax=max_)
         ax[0].set_title("Predictions")
 
         ax1img = ax[1].imshow(predsValid[i],
-                              cmap=plt.colormaps.get_cmap("BrBG"),
+                              cmap=plt.colormaps.get_cmap(cmap),
                               vmin=min_,
                               vmax=max_)
         ax[1].set_title("Ground Truth")
@@ -208,7 +211,7 @@ def main():
         plt.colorbar(ax0img, ax=ax.ravel().tolist()[:2])
 
         ax2img = ax[2].imshow(abs(ground_truth_Valid[i] - predsValid[i]),
-                              cmap=plt.colormaps.get_cmap("CMRmap"),
+                              cmap=plt.colormaps.get_cmap(cmapDiff),
                               vmin=min_,
                               vmax=max_)
         ax[2].set_title("Difference")

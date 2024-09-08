@@ -68,12 +68,13 @@ def writeVideo(imagePath, videoPath):
     writer.close()
 
 
-def writeScatter(preds, gt, path):
+def writeScatter(preds, gt, path, name):
     preds = preds.flatten()
     gt = gt.flatten()
     print(preds.shape, gt.shape)
     fig, ax = plt.subplots(1, 1)
     ax.scatter(preds, gt)
+    ax.set_title(name)
     fig.savefig(path)
 
 
@@ -92,6 +93,12 @@ def main():
 
     if os.path.exists('metrics/preds.npy'):
         os.remove('metrics/preds.npy')
+    
+    if (os.path.exists('metrics/train_scatter.png')):
+        os.remove('metrics/train_scatter.png')
+    
+    if (os.path.exists('metrics/valid_scatter.png')):
+        os.remove('metrics/valid_scatter.png')
 
     model = torch.load('model.pt')
 
@@ -116,8 +123,8 @@ def main():
     predsValid = np.array(predsValid)
     ground_truth_Valid = np.array(ground_truth_Valid)
 
-    writeScatter(predsTrain, ground_truth_Train, 'metrics/train_scatter.png')
-    writeScatter(predsValid, ground_truth_Valid, 'metrics/valid_scatter.png')
+    writeScatter(predsTrain, ground_truth_Train, 'metrics/train_scatter.png', 'train')
+    writeScatter(predsValid, ground_truth_Valid, 'metrics/valid_scatter.png', 'valid')
 
     preds = np.concatenate((predsTrain, predsValid))
     ground_truth = np.concatenate((ground_truth_Train, ground_truth_Valid))
